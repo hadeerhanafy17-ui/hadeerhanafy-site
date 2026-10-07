@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>اختاري الخلفية</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..110,400..800&amp;family=Inter:wght@400;500;600&amp;display=swap">
+<style>
+  :root { --paper:#171717; --ink:#EDE9E3; --ink-2:#ADA9A3; --ink-3:#807C77;
+          --accent:#DFF55E; --line:rgba(237,233,227,.13);
+          --serif:'Archivo',system-ui,sans-serif; --body:'Inter',system-ui,sans-serif; }
+  *,*::before,*::after { box-sizing:border-box; }
+  html,body { margin:0; height:100%; background:var(--paper); color:var(--ink); font-family:var(--body); -webkit-font-smoothing:antialiased; }
+  body { overflow:hidden; }
+
+  /* ---- background layers (only the active one is shown) ---- */
+  .bg { position:fixed; inset:0; z-index:0; pointer-events:none; opacity:0; transition:opacity .7s ease; }
+  .bg.on { opacity:1; }
+
+  /* 1 — aurora */
+  .blob { position:absolute; border-radius:50%; filter:blur(90px); }
+  .b1 { width:62vw; height:62vw; left:-14vw; top:-18vw; background:rgba(223,245,94,.16); animation:d1 26s ease-in-out infinite alternate; }
+  .b2 { width:54vw; height:54vw; right:-12vw; top:24vh; background:rgba(120,180,255,.10); animation:d2 32s ease-in-out infinite alternate; }
+  .b3 { width:46vw; height:46vw; left:22vw; bottom:-22vw; background:rgba(255,140,90,.09); animation:d3 38s ease-in-out infinite alternate; }
+  @keyframes d1 { to { transform:translate3d(16vw,12vh,0) scale(1.18); } }
+  @keyframes d2 { to { transform:translate3d(-14vw,-10vh,0) scale(.86); } }
+  @keyframes d3 { to { transform:translate3d(10vw,-14vh,0) scale(1.12); } }
+
+  /* 2 — 3D viewport grid + dust */
+  .grid-wrap { position:absolute; inset:0; overflow:hidden; perspective:420px; }
+  .grid-floor { position:absolute; left:-50%; right:-50%; bottom:-10%; height:150%;
+    background-image:linear-gradient(rgba(223,245,94,.20) 1px, transparent 1px),
+                     linear-gradient(90deg, rgba(223,245,94,.20) 1px, transparent 1px);
+    background-size:70px 70px;
+    transform:rotateX(74deg); transform-origin:50% 100%;
+    animation:floor 7s linear infinite;
+    -webkit-mask-image:linear-gradient(to top,#000 0%,rgba(0,0,0,.35) 42%,transparent 72%);
+    mask-image:linear-gradient(to top,#000 0%,rgba(0,0,0,.35) 42%,transparent 72%); }
+  @keyframes floor { to { background-position:0 70px, 0 0; } }
+  .grid-glow { position:absolute; left:50%; bottom:-10%; width:90vw; height:50vh; transform:translateX(-50%);
+    background:radial-gradient(ellipse at bottom, rgba(223,245,94,.10), transparent 68%); }
+
+  /* 3 — film grain + sweep */
+  .grain { position:absolute; inset:-120px; opacity:.45; background-repeat:repeat; animation:jitter .9s steps(3) infinite; }
+  @keyframes jitter { 0%{transform:translate(0,0)} 33%{transform:translate(-14px,9px)} 66%{transform:translate(11px,-12px)} 100%{transform:translate(0,0)} }
+  .vign { position:absolute; inset:0; background:radial-gradient(ellipse 78% 72% at 50% 44%, transparent 42%, rgba(0,0,0,.62) 100%); }
+  .sweep { position:absolute; left:0; right:0; height:36vh; top:-40vh;
+    background:linear-gradient(to bottom, transparent, rgba(223,245,94,.075) 45%, rgba(223,245,94,.10) 50%, transparent);
+    animation:sweep 11s linear infinite; }
+  @keyframes sweep { 0%{top:-40vh} 55%{top:118vh} 100%{top:118vh} }
+
+  canvas.dust { position:absolute; inset:0; width:100%; height:100%; }
+
+  /* ---- sample content ---- */
+  .stage { position:relative; z-index:1; height:100%; display:flex; flex-direction:column;
+           justify-content:center; padding:0 7vw 150px; }
+  h1 { margin:0 0 14px; font-family:var(--serif); font-weight:400; direction:ltr; text-align:left;
+       font-size:clamp(32px,6vw,76px); line-height:.99; letter-spacing:-.02em; }
+  h1 em { font-style:normal; color:var(--accent); }
+  .sub { margin:0 0 26px; max-width:46ch; direction:ltr; text-align:left;
+         font-size:clamp(14px,1.5vw,18px); line-height:1.6; color:var(--ink-2); }
+  .card { width:min(300px,76vw); padding:16px; border:1px solid var(--line); border-radius:6px;
+          background:rgba(30,30,30,.78); direction:ltr; text-align:left; }
+  .card b { display:block; font-family:var(--serif); font-size:19px; font-weight:600; }
+  .card span { display:block; margin-top:5px; font-size:13.5px; color:var(--ink-2); }
+
+  /* ---- picker ---- */
+  .picker { position:fixed; z-index:5; left:0; right:0; bottom:0; padding:14px 14px calc(14px + env(safe-area-inset-bottom));
+            display:flex; gap:9px; justify-content:center; flex-wrap:wrap;
+            background:linear-gradient(to top, #171717 62%, rgba(23,23,23,0)); }
+  .opt { flex:1 1 150px; max-width:230px; min-height:62px; padding:9px 12px; cursor:pointer;
+         border:1px solid var(--line); border-radius:999px; background:rgba(23,23,23,.9); color:var(--ink);
+         font:500 14px var(--body); line-height:1.35; transition:border-color .3s, background .3s, color .3s; }
+  .opt small { display:block; margin-top:2px; font-size:11.5px; color:var(--ink-3); }
+  .opt.on { background:var(--accent); border-color:var(--accent); color:#141A10; }
+  .opt.on small { color:rgba(20,26,16,.72); }
+  .hint { position:fixed; z-index:5; top:14px; right:14px; left:14px; text-align:center;
+          font-size:13px; color:var(--ink-3); }
+  @media (max-width:600px) { .opt { flex:1 1 100%; } .stage { padding-bottom:230px; } }
+</style>
+</head>
+<body>
+
+<p class="hint">دوسي على أي واحدة وشوفي الفرق — وقوليلي الرقم</p>
+
+<div class="bg" id="bg1" aria-hidden="true">
+  <span class="blob b1"></span><span class="blob b2"></span><span class="blob b3"></span>
+</div>
+
+<div class="bg" id="bg2" aria-hidden="true">
+  <div class="grid-wrap"><div class="grid-floor"></div></div>
+  <span class="grid-glow"></span>
+  <canvas class="dust" id="dust"></canvas>
+</div>
+
+<div class="bg" id="bg3" aria-hidden="true">
+  <div class="grain" id="grain"></div>
+  <span class="sweep"></span>
+  <span class="vign"></span>
+</div>
+
+<div class="stage">
+  <h1>CGI commercials, <em>made with AI</em>,<br>built on one idea.</h1>
+  <p class="sub">Brands, products and the experts behind them — turned into short cinematic films.</p>
+  <div class="card"><b>The shave that never ends</b><span>200,000+ views</span></div>
+</div>
+
+<div class="picker" role="group">
+  <button class="opt" type="button" data-bg="1">١ — هالة ضوء<small>ألوان ناعمة بتتحرك ببطء</small></button>
+  <button class="opt" type="button" data-bg="2">٢ — شبكة 3D وغبار<small>زي برنامج الـ3D</small></button>
+  <button class="opt" type="button" data-bg="3">٣ — حبيبات فيلم<small>ملمس سينما + مسح ضوئي</small></button>
+</div>
+
+<script src="bg-demo.js" defer></script>
+</body>
+</html>
