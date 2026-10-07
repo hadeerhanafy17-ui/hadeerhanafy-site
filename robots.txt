@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://hadeerhanafy.com/sitemap.xml
