@@ -507,10 +507,61 @@
     kick();
   }
 
+  /* ---- drifting dust over the background grid ---- */
+  function startDust() {
+    var cv = $('hh-dust');
+    if (!cv || (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches)) return;
+    var ctx = cv.getContext('2d');
+    if (!ctx) return;
+    var bits = [], raf = 0;
+
+    function seed() {
+      var w = cv.width = cv.clientWidth, h = cv.height = cv.clientHeight;
+      var count = Math.round(Math.min(80, (w * h) / 18000));
+      bits = [];
+      for (var i = 0; i < count; i++) {
+        bits.push({
+          x: Math.random() * w, y: Math.random() * h,
+          r: 0.5 + Math.random() * 1.5,
+          vx: (Math.random() - 0.5) * 0.13,
+          vy: -0.04 - Math.random() * 0.15,
+          a: 0.1 + Math.random() * 0.34,
+          p: Math.random() * Math.PI * 2
+        });
+      }
+    }
+
+    function tick(t) {
+      raf = 0;
+      var w = cv.width, h = cv.height;
+      ctx.clearRect(0, 0, w, h);
+      for (var i = 0; i < bits.length; i++) {
+        var b = bits[i];
+        b.x += b.vx + Math.sin(t / 2600 + b.p) * 0.1;
+        b.y += b.vy;
+        if (b.y < -6) { b.y = h + 6; b.x = Math.random() * w; }
+        if (b.x < -6) b.x = w + 6; else if (b.x > w + 6) b.x = -6;
+        ctx.beginPath();
+        ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(223,245,94,' + (b.a * (0.6 + 0.4 * Math.sin(t / 1700 + b.p))).toFixed(3) + ')';
+        ctx.fill();
+      }
+      if (!document.hidden) raf = requestAnimationFrame(tick);
+    }
+
+    function kick() { if (!raf && !document.hidden) raf = requestAnimationFrame(tick); }
+
+    seed();
+    kick();
+    window.addEventListener('resize', function () { seed(); kick(); });
+    document.addEventListener('visibilitychange', kick);
+  }
+
   renderFilters();
   renderGrid();
   renderSteps();
   renderServices();
   trackScroll();
   startMotion();
+  startDust();
 })();

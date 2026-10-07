@@ -47,11 +47,25 @@
   .skip { position: absolute; left: -9999px; top: 0; z-index: 100; padding: 12px 18px; background: var(--accent); color: #141A10; border-radius: 0 0 6px 0; font: 500 15px var(--body); text-decoration: none; }
   .skip:focus { left: 0; }
 
-  .hh { position: relative; width: 100%; overflow-x: clip; background: var(--paper); }
+  .hh { position: relative; width: 100%; overflow-x: clip; }
   .hh main { position: relative; z-index: 1; }
+
+  /* site background — a 3D-viewport floor with drifting dust, behind every section */
+  .site-bg { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; perspective: 420px; }
+  .bg-grid { position: absolute; left: -50%; right: -50%; bottom: -10%; height: 150%;
+    background-image: linear-gradient(rgba(223, 245, 94, .13) 1px, transparent 1px),
+                      linear-gradient(90deg, rgba(223, 245, 94, .13) 1px, transparent 1px);
+    background-size: 70px 70px; transform: rotateX(74deg); transform-origin: 50% 100%;
+    animation: bgFloor 7s linear infinite;
+    -webkit-mask-image: linear-gradient(to top, #000 0%, rgba(0, 0, 0, .3) 42%, transparent 70%);
+    mask-image: linear-gradient(to top, #000 0%, rgba(0, 0, 0, .3) 42%, transparent 70%); }
+  @keyframes bgFloor { to { background-position: 0 70px, 0 0; } }
+  .bg-glow { position: absolute; left: 50%; bottom: -12%; width: 92vw; height: 52vh; transform: translateX(-50%);
+    background: radial-gradient(ellipse at bottom, rgba(223, 245, 94, .075), transparent 68%); }
+  .bg-dust { position: absolute; inset: 0; width: 100%; height: 100%; }
   .wrap { max-width: 1180px; margin: 0 auto; padding: 0 40px; }
   .chap { padding: 104px 0; scroll-margin-top: 72px; }
-  .sand { background: var(--sand); }
+  .sand { background: rgba(30, 30, 30, .74); }
 
   .ch { display: flex; align-items: center; gap: 12px; margin: 0 0 26px; font-size: 13px; letter-spacing: .08em; color: var(--ink-3); }
   .ch-num { color: var(--accent); font-variant-numeric: tabular-nums; }
@@ -75,10 +89,9 @@
   .btn-line:hover { color: var(--ink); border-color: var(--accent); }
 
   /* hero */
-  .hero { position: relative; height: clamp(620px, calc(100svh - 86px), 980px); overflow: hidden; background: radial-gradient(ellipse 66% 58% at 50% 46%, #262626 0%, #1A1A1A 58%, #121212 100%); }
+  .hero { position: relative; height: clamp(620px, calc(100svh - 86px), 980px); overflow: hidden; background: radial-gradient(ellipse 66% 58% at 50% 46%, rgba(40, 40, 40, .80) 0%, rgba(26, 26, 26, .60) 58%, rgba(16, 16, 16, .72) 100%); }
   .hero-stage { position: absolute; z-index: 1; inset: 0; overflow: hidden; }
   .glow { position: absolute; left: 50%; top: 48%; width: min(900px, 86vw); aspect-ratio: 1; transform: translate(-50%, -50%); border-radius: 50%; background: radial-gradient(circle, rgba(223, 245, 94, .10) 0%, transparent 66%); animation: fadein 2s var(--ease) .2s both; }
-  .floor { position: absolute; left: 50%; bottom: 12.6%; width: min(1000px, 90vw); height: 1px; transform: translateX(-50%); background: linear-gradient(90deg, transparent, rgba(236, 231, 224, .22), transparent); }
   .floor-shadow { position: absolute; left: 50%; bottom: 11.4%; width: min(340px, 34vw); height: 26px; transform: translateX(-50%); border-radius: 50%; background: radial-gradient(ellipse at center, rgba(0, 0, 0, .6), transparent 72%); }
   .chip-float { position: absolute; z-index: 3; display: inline-flex; align-items: center; gap: 8px; padding: 9px 16px; border-radius: 999px; border: 1px solid var(--line); background: rgba(30, 30, 30, .82); font-size: 13.5px; letter-spacing: .02em; color: var(--ink-2); white-space: nowrap; will-change: transform; animation: fadein 1.2s var(--ease) both; }
   .chip-float::before { content: ""; width: 5px; height: 5px; border-radius: 50%; background: var(--accent); }
@@ -275,7 +288,8 @@
     [data-js] .reveal { opacity: 1; transform: none; }
     [data-js] .mask > span { transform: none; }
     [data-js] .rule::after { transform: scaleX(1); }
-    .float, .rp { display: none; }
+    .float, .rp, .bg-dust { display: none; }
+    .bg-grid { animation: none; }
     *, *::before, *::after { animation-duration: .01ms !important; animation-delay: 0ms !important; transition-duration: .01ms !important; }
   }
 </style>
@@ -284,6 +298,12 @@
 <a class="skip" href="#about">Skip to content</a>
 
 <div id="hh-root" class="hh">
+  <div class="site-bg" id="hh-bg" aria-hidden="true">
+    <div class="bg-grid"></div>
+    <span class="bg-glow"></span>
+    <canvas class="bg-dust" id="hh-dust"></canvas>
+  </div>
+
   <span class="progress-bar" id="hh-progress" aria-hidden="true"></span>
 
   <div class="float" id="hh-float" aria-hidden="true">
@@ -309,7 +329,6 @@
     <section id="home" class="hero">
       <div class="hero-stage" aria-hidden="true">
         <span class="glow"></span>
-        <span class="floor"></span>
         <span class="floor-shadow"></span>
       </div>
       <span class="chip-float cf1" data-depth="1.4" aria-hidden="true">AI CGI</span>
