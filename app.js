@@ -507,54 +507,149 @@
     kick();
   }
 
-  /* ---- drifting dust over the background grid ---- */
-  function startDust() {
-    var cv = $('hh-dust');
-    if (!cv || (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches)) return;
+  /* ---- background: volumetric orbs drifting toward the viewer ---- */
+  function startOrbs() {
+    var cv = $('hh-orbs');
+    if (!cv) return;
     var ctx = cv.getContext('2d');
     if (!ctx) return;
-    var bits = [], raf = 0;
+    var reduce = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+
+    // deep, saturated hues that stay premium on charcoal; the brand lime is
+    // rarer than the other two so it keeps its weight.
+    var HUES = [
+      [124, 92, 255],   // violet
+      [56, 189, 248],   // cyan
+      [124, 92, 255],
+      [45, 212, 191],   // teal
+      [56, 189, 248],
+      [223, 245, 94]    // lime — the brand accent
+    ];
+
+    var orbs = [], dpr = 1, W = 0, H = 0, raf = 0;
+    var mx = 0, my = 0, tmx = 0, tmy = 0;
+
+    function makeOrb(z) {
+      return {
+        z: z,
+        ox: (Math.random() - 0.5) * 1.9,          // position in camera space
+        oy: (Math.random() - 0.5) * 1.5,
+        base: 30 + Math.random() * 62,             // radius before perspective
+        dz: 0.028 + Math.random() * 0.042,         // approach speed
+        hue: HUES[(Math.random() * HUES.length) | 0],
+        drift: (Math.random() - 0.5) * 0.05,
+        phase: Math.random() * Math.PI * 2,
+        spin: 0.3 + Math.random() * 0.5
+      };
+    }
+
+    function resize() {
+      dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+      W = cv.clientWidth; H = cv.clientHeight;
+      cv.width = Math.round(W * dpr);
+      cv.height = Math.round(H * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
 
     function seed() {
-      var w = cv.width = cv.clientWidth, h = cv.height = cv.clientHeight;
-      var count = Math.round(Math.min(80, (w * h) / 18000));
-      bits = [];
-      for (var i = 0; i < count; i++) {
-        bits.push({
-          x: Math.random() * w, y: Math.random() * h,
-          r: 0.5 + Math.random() * 1.5,
-          vx: (Math.random() - 0.5) * 0.13,
-          vy: -0.04 - Math.random() * 0.15,
-          a: 0.1 + Math.random() * 0.34,
-          p: Math.random() * Math.PI * 2
-        });
-      }
+      resize();
+      var n = W < 700 ? 8 : (W < 1200 ? 12 : 15);
+      orbs = [];
+      for (var i = 0; i < n; i++) orbs.push(makeOrb(0.06 + (i / n) * 0.96));
     }
 
-    function tick(t) {
+    function smooth(a, b, v) {
+      var x = Math.max(0, Math.min(1, (v - a) / (b - a)));
+      return x * x * (3 - 2 * x);
+    }
+
+    function paint(o, t) {
+      // perspective: small and sharp far away, large and soft up close
+      var p = 1 / (0.17 + o.z * 1.28);
+      var r = o.base * p;
+      if (r < 1) return;
+
+      var wob = Math.sin(t * o.spin + o.phase) * 0.035;
+      var cx = W * 0.5 + (o.ox + wob) * W * 0.52 * p + mx * (1 - o.z) * 46;
+      var cy = H * 0.5 + (o.oy + o.drift * Math.sin(t * 0.4 + o.phase)) * H * 0.56 * p + my * (1 - o.z) * 32;
+
+      if (cx < -r * 2.4 || cx > W + r * 2.4 || cy < -r * 2.4 || cy > H + r * 2.4) return;
+
+      // fade in as it emerges from the distance, dissolve as it passes the camera
+      var a = smooth(1, 0.82, o.z) * smooth(0, 0.34, o.z);
+      if (a <= 0.002) return;
+
+      var c = o.hue, g;
+
+      // halo
+      g = ctx.createRadialGradient(cx, cy, r * 0.3, cx, cy, r * 2.3);
+      g.addColorStop(0, 'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',' + (0.17 * a).toFixed(4) + ')');
+      g.addColorStop(1, 'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',0)');
+      ctx.fillStyle = g;
+      ctx.beginPath(); ctx.arc(cx, cy, r * 2.3, 0, Math.PI * 2); ctx.fill();
+
+      // body — lit from the upper left, falling off to a dark limb
+      g = ctx.createRadialGradient(cx - r * 0.34, cy - r * 0.38, r * 0.05, cx, cy, r * 1.04);
+      g.addColorStop(0, 'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',' + (0.48 * a).toFixed(4) + ')');
+      g.addColorStop(0.55, 'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',' + (0.23 * a).toFixed(4) + ')');
+      g.addColorStop(1, 'rgba(' + ((c[0] * 0.35) | 0) + ',' + ((c[1] * 0.35) | 0) + ',' + ((c[2] * 0.45) | 0) + ',0)');
+      ctx.fillStyle = g;
+      ctx.beginPath(); ctx.arc(cx, cy, r * 1.04, 0, Math.PI * 2); ctx.fill();
+
+      // rim light, strongest on the lower right
+      ctx.save();
+      ctx.lineWidth = Math.max(0.8, r * 0.045);
+      g = ctx.createLinearGradient(cx - r, cy - r, cx + r, cy + r);
+      g.addColorStop(0, 'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',0)');
+      g.addColorStop(0.62, 'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',' + (0.44 * a).toFixed(4) + ')');
+      g.addColorStop(1, 'rgba(255,255,255,' + (0.30 * a).toFixed(4) + ')');
+      ctx.strokeStyle = g;
+      ctx.beginPath(); ctx.arc(cx, cy, r * 0.97, 0, Math.PI * 2); ctx.stroke();
+      ctx.restore();
+
+      // specular highlight
+      var hr = r * 0.3;
+      g = ctx.createRadialGradient(cx - r * 0.36, cy - r * 0.4, 0, cx - r * 0.36, cy - r * 0.4, hr);
+      g.addColorStop(0, 'rgba(255,255,255,' + (0.32 * a).toFixed(4) + ')');
+      g.addColorStop(1, 'rgba(255,255,255,0)');
+      ctx.fillStyle = g;
+      ctx.beginPath(); ctx.arc(cx - r * 0.36, cy - r * 0.4, hr, 0, Math.PI * 2); ctx.fill();
+    }
+
+    var last = performance.now();
+    function tick(now) {
       raf = 0;
-      var w = cv.width, h = cv.height;
-      ctx.clearRect(0, 0, w, h);
-      for (var i = 0; i < bits.length; i++) {
-        var b = bits[i];
-        b.x += b.vx + Math.sin(t / 2600 + b.p) * 0.1;
-        b.y += b.vy;
-        if (b.y < -6) { b.y = h + 6; b.x = Math.random() * w; }
-        if (b.x < -6) b.x = w + 6; else if (b.x > w + 6) b.x = -6;
-        ctx.beginPath();
-        ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(223,245,94,' + (b.a * (0.6 + 0.4 * Math.sin(t / 1700 + b.p))).toFixed(3) + ')';
-        ctx.fill();
+      var dt = Math.min(0.05, (now - last) / 1000); last = now;
+      var t = now / 1000;
+
+      mx += (tmx - mx) * 0.05;
+      my += (tmy - my) * 0.05;
+
+      ctx.clearRect(0, 0, W, H);
+      ctx.globalCompositeOperation = 'lighter';
+      for (var i = 0; i < orbs.length; i++) {
+        var o = orbs[i];
+        o.z -= o.dz * dt;
+        if (o.z <= 0) { orbs[i] = makeOrb(1); orbs[i].z = 1; o = orbs[i]; }
+        paint(o, t);
       }
-      if (!document.hidden) raf = requestAnimationFrame(tick);
+      ctx.globalCompositeOperation = 'source-over';
+
+      if (!document.hidden && !reduce) raf = requestAnimationFrame(tick);
     }
 
-    function kick() { if (!raf && !document.hidden) raf = requestAnimationFrame(tick); }
+    function kick() { if (!raf && !document.hidden) { last = performance.now(); raf = requestAnimationFrame(tick); } }
 
     seed();
+    if (reduce) { ctx.clearRect(0, 0, W, H); for (var i = 0; i < orbs.length; i++) paint(orbs[i], 0); return; }
     kick();
+
     window.addEventListener('resize', function () { seed(); kick(); });
     document.addEventListener('visibilitychange', kick);
+    window.addEventListener('pointermove', function (e) {
+      tmx = Math.max(-1, Math.min(1, (e.clientX / (window.innerWidth || 1) - 0.5) * 2));
+      tmy = Math.max(-1, Math.min(1, (e.clientY / (window.innerHeight || 1) - 0.5) * 2));
+    }, { passive: true });
   }
 
   renderFilters();
@@ -563,5 +658,5 @@
   renderServices();
   trackScroll();
   startMotion();
-  startDust();
+  startOrbs();
 })();
