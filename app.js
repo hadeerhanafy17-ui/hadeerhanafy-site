@@ -515,15 +515,16 @@
     if (!ctx) return;
     var reduce = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
 
-    // deep, saturated hues that stay premium on charcoal; the brand lime is
-    // rarer than the other two so it keeps its weight.
+    // one warm family drawn from the character's burgundy — plum through wine,
+    // rose and ember. The brand lime stays out of here so it reads as the only
+    // accent on the page.
     var HUES = [
-      [124, 92, 255],   // violet
-      [56, 189, 248],   // cyan
-      [124, 92, 255],
-      [45, 212, 191],   // teal
-      [56, 189, 248],
-      [223, 245, 94]    // lime — the brand accent
+      [152, 50, 94],    // plum
+      [190, 54, 86],    // wine — closest to her burgundy
+      [226, 92, 120],   // rose
+      [190, 54, 86],
+      [204, 92, 86],    // ember
+      [152, 50, 94]
     ];
 
     var orbs = [], dpr = 1, W = 0, H = 0, raf = 0;
@@ -583,15 +584,15 @@
 
       // halo
       g = ctx.createRadialGradient(cx, cy, r * 0.3, cx, cy, r * 2.3);
-      g.addColorStop(0, 'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',' + (0.17 * a).toFixed(4) + ')');
+      g.addColorStop(0, 'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',' + (0.20 * a).toFixed(4) + ')');
       g.addColorStop(1, 'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',0)');
       ctx.fillStyle = g;
       ctx.beginPath(); ctx.arc(cx, cy, r * 2.3, 0, Math.PI * 2); ctx.fill();
 
       // body — lit from the upper left, falling off to a dark limb
       g = ctx.createRadialGradient(cx - r * 0.34, cy - r * 0.38, r * 0.05, cx, cy, r * 1.04);
-      g.addColorStop(0, 'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',' + (0.48 * a).toFixed(4) + ')');
-      g.addColorStop(0.55, 'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',' + (0.23 * a).toFixed(4) + ')');
+      g.addColorStop(0, 'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',' + (0.56 * a).toFixed(4) + ')');
+      g.addColorStop(0.55, 'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',' + (0.26 * a).toFixed(4) + ')');
       g.addColorStop(1, 'rgba(' + ((c[0] * 0.35) | 0) + ',' + ((c[1] * 0.35) | 0) + ',' + ((c[2] * 0.45) | 0) + ',0)');
       ctx.fillStyle = g;
       ctx.beginPath(); ctx.arc(cx, cy, r * 1.04, 0, Math.PI * 2); ctx.fill();
@@ -601,7 +602,7 @@
       ctx.lineWidth = Math.max(0.8, r * 0.045);
       g = ctx.createLinearGradient(cx - r, cy - r, cx + r, cy + r);
       g.addColorStop(0, 'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',0)');
-      g.addColorStop(0.62, 'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',' + (0.44 * a).toFixed(4) + ')');
+      g.addColorStop(0.62, 'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',' + (0.52 * a).toFixed(4) + ')');
       g.addColorStop(1, 'rgba(255,255,255,' + (0.30 * a).toFixed(4) + ')');
       ctx.strokeStyle = g;
       ctx.beginPath(); ctx.arc(cx, cy, r * 0.97, 0, Math.PI * 2); ctx.stroke();
