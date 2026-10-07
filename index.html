@@ -87,6 +87,11 @@
   .cf3 { left: 13%; bottom: 27%; animation-delay: 1.5s; }
   .cf4 { right: 9%; bottom: 31%; animation-delay: 1.7s; }
   .sprite { position: absolute; z-index: 2; left: 50%; bottom: 13%; height: min(740px, 74%); aspect-ratio: 520 / 1223; transform: translateX(-50%); background-image: url("assets/char-sprite.webp"); background-repeat: no-repeat; background-size: 500% 500%; background-position: 0% 0%; animation: charIn 1.4s var(--ease) .35s both; }
+  /* render pass — a scan sweep that briefly exposes the character's wireframe */
+  .rp { position: absolute; z-index: 3; left: 50%; bottom: 13%; height: min(740px, 74%); aspect-ratio: 520 / 1223; transform: translateX(-50%); pointer-events: none; }
+  .rp-wire { position: absolute; inset: 0; opacity: 0; background-image: url("assets/char-wire.webp"); background-repeat: no-repeat; background-size: 500% 500%; background-position: 0% 0%; filter: drop-shadow(0 0 7px rgba(223, 245, 94, .5)); -webkit-mask-image: linear-gradient(to bottom, transparent, #000 38%, #000 62%, transparent); mask-image: linear-gradient(to bottom, transparent, #000 38%, #000 62%, transparent); -webkit-mask-size: 100% 34%; mask-size: 100% 34%; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; -webkit-mask-position: 0% -45%; mask-position: 0% -45%; }
+  .rp-line { position: absolute; left: -16%; width: 132%; height: 2px; top: -12%; opacity: 0; background: linear-gradient(90deg, transparent, var(--accent) 24%, var(--accent) 76%, transparent); box-shadow: 0 0 20px 3px rgba(223, 245, 94, .45); }
+
   .hero-foot { position: absolute; z-index: 3; left: 40px; right: 40px; bottom: 30px; display: flex; justify-content: space-between; align-items: center; gap: 20px; font-size: 13px; color: var(--ink-2); animation: fadein 1.4s var(--ease) 1.4s both; }
   .hero-foot span.line { display: block; width: 46px; height: 1px; background: var(--accent); }
   .hero-foot p { margin: 0; display: flex; align-items: center; gap: 12px; }
@@ -270,7 +275,7 @@
     [data-js] .reveal { opacity: 1; transform: none; }
     [data-js] .mask > span { transform: none; }
     [data-js] .rule::after { transform: scaleX(1); }
-    .float { display: none; }
+    .float, .rp { display: none; }
     *, *::before, *::after { animation-duration: .01ms !important; animation-delay: 0ms !important; transition-duration: .01ms !important; }
   }
 </style>
@@ -312,6 +317,10 @@
       <span class="chip-float cf3" data-depth="2.6" aria-hidden="true">Trend-Led Content</span>
       <span class="chip-float cf4" data-depth="1.7" aria-hidden="true">Expert Branding</span>
       <div class="sprite" id="hh-sprite" role="img" aria-label="Hadeer Hanafy's 3D character, following the cursor"></div>
+      <div class="rp" id="hh-rp" aria-hidden="true">
+        <span class="rp-wire" id="hh-wire"></span>
+        <span class="rp-line" id="hh-line"></span>
+      </div>
       <div class="hero-foot">
         <p><span class="line"></span>Scroll</p>
         <p>Available worldwide</p>
@@ -349,6 +358,7 @@
             <div class="fact"><dt>Identity locking</dt><dd>The same face, product and logo held steady across a whole series</dd></div>
             <div class="fact"><dt>Always current</dt><dd>A system that surfaces every new tool, model and trend the day it lands</dd></div>
             <div class="fact"><dt>Client handling</dt><dd>Three years in sales and client service at a telecom operator: reading a brief, managing expectations, following through</dd></div>
+            <div class="fact"><dt>Websites</dt><dd>Animated 3D sites, designed and built end to end. This one is mine.</dd></div>
           </dl>
 
           <div class="stats reveal">
@@ -365,8 +375,9 @@
               <p>The idea leads and the tools follow it. Each shot goes to the engine that renders it best.</p>
             </div>
             <ul class="tool-list">
-              <li>Higgsfield</li><li>Claude</li><li>Flow</li><li>OmniFlash</li><li>Grok</li>
-              <li>Kling</li><li>Seedance</li><li>Veo 3</li><li>Midjourney</li><li>Nano Banana</li><li>ElevenLabs</li>
+              <li>Higgsfield</li><li>Claude</li><li>ChatGPT</li><li>Flow</li><li>OmniFlash</li><li>Grok</li>
+              <li>Kling</li><li>Seedance</li><li>Veo 3</li><li>Runway</li><li>Midjourney</li>
+              <li>Nano Banana</li><li>Freepik</li><li>ElevenLabs</li><li>HeyGen</li>
             </ul>
           </div>
         </div>

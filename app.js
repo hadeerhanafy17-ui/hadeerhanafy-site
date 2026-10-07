@@ -45,7 +45,10 @@
     { title: 'Voice, edit and captions', text: 'Voice and lip-sync, editing, sound, captions and revisions until it is ready to post.', deliver: 'Final film and caption' }
   ];
 
-  var SERVICES = ['AI CGI', 'Brand Commercial', 'Trend-Led Content', 'Expert Branding', 'Creative Direction'];
+  var SERVICES = ['AI CGI', 'Brand Commercial', 'Trend-Led Content', 'Expert Branding', '3D Website', 'Creative Direction'];
+
+  // render pass: one sweep every RP_PERIOD seconds, lasting RP_DUR seconds
+  var RP_PERIOD = 7.0, RP_DUR = 1.45;
   var FILTERS = [['all', 'All work'], ['cgi', 'AI CGI'], ['brand', 'Brand Commercials'], ['trend', 'Trend-Led'], ['expert', 'Expert Branding']];
 
   var $ = function (id) { return document.getElementById(id); };
@@ -328,6 +331,7 @@
   function startMotion() {
     var hero = $('home'), float = $('hh-float'), tilt = $('hh-char2');
     var sprite = $('hh-sprite'), bar = $('hh-progress');
+    var rp = $('hh-rp'), wire = $('hh-wire'), line = $('hh-line');
     var reduce = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
     var ids = NAV_IDS, sides = [0.5, 1, 0, 1, 0];
     var smooth = function (a, b, v) { var x = Math.max(0, Math.min(1, (v - a) / (b - a))); return x * x * (3 - 2 * x); };
@@ -442,14 +446,37 @@
       }
 
       if (sprite) {
-        var idle = Math.sin(sec * 1.15) * 1;
+        // idle: a slow, small sweep so she never looks frozen.
+        // live (pointer moving): aim straight at the raw pointer and catch up fast.
+        var idle = Math.sin(sec * 0.42) * 0.8;
         var live = pointerSeen && (now - lastPointer < 2200);
-        var aim = live ? Math.max(-1, Math.min(1, nx)) : idle;
-        look += (aim - look) * 0.22;
+        var aim = live ? Math.max(-1, Math.min(1, tx)) : idle;
+        look += (aim - look) * (live ? 0.34 : 0.085);
         var fi = 24 - Math.max(0, Math.min(24, Math.round((look + 1) / 2 * 24)));
         var col = fi % 5, row = (fi / 5) | 0;
-        sprite.style.backgroundPosition = (col * 25) + '% ' + (row * 25) + '%';
-        sprite.style.transform = 'translateX(-50%) translate3d(' + (look * 10).toFixed(1) + 'px, ' + (-Math.abs(look) * 2 + Math.sin(sec * 0.9) * 3).toFixed(1) + 'px, 0)';
+        var bgPos = (col * 25) + '% ' + (row * 25) + '%';
+        var tf = 'translateX(-50%) translate3d(' + (look * 10).toFixed(1) + 'px, ' + (-Math.abs(look) * 2 + Math.sin(sec * 0.9) * 3).toFixed(1) + 'px, 0)';
+        sprite.style.backgroundPosition = bgPos;
+        sprite.style.transform = tf;
+
+        // render pass: a scan line sweeps down and exposes the wireframe under it
+        if (rp && !reduce) {
+          rp.style.transform = tf;
+          wire.style.backgroundPosition = bgPos;
+          var t = sec % RP_PERIOD;
+          if (t < RP_DUR) {
+            var k = t / RP_DUR;
+            var pos = -45 + k * 190;
+            var fade = Math.sin(Math.PI * k);
+            wire.style.maskPosition = wire.style.webkitMaskPosition = '0% ' + pos.toFixed(1) + '%';
+            wire.style.opacity = (fade * 0.95).toFixed(3);
+            line.style.top = (pos * 0.66 + 17).toFixed(1) + '%';
+            line.style.opacity = (fade * 0.9).toFixed(3);
+          } else if (wire.style.opacity !== '0') {
+            wire.style.opacity = '0';
+            line.style.opacity = '0';
+          }
+        }
       }
 
       float.style.height = h.toFixed(0) + 'px';
