@@ -6,7 +6,7 @@
   var PROJECTS = [
     { title: 'The shave that never ends', cat: 'expert',
       summary: 'A wordless story about the daily cycle of shaving and regrowth, and the clinic session that ends it. Made for Al Hoqail Medical Group.',
-      stat: '200,000+ views', loop: 'assets/w1-loop.webp', full: 'assets/w1.mp4' },
+      stat: '215,000+ views', loop: 'assets/w1-loop.webp', full: 'assets/w1.mp4' },
     { title: 'Every piece has its animal', cat: 'cgi', tag: 'Concept',
       summary: 'A lioness in ruby, a panther in emerald, a wolf in diamonds — each animal wears the piece that matches it. Self-initiated concept inspired by L’azurde.',
       loop: 'assets/w10-loop.webp', full: 'assets/w10.mp4' },
@@ -336,12 +336,11 @@
     var ids = NAV_IDS, sides = [0.5, 1, 0, 1, 0];
     var smooth = function (a, b, v) { var x = Math.max(0, Math.min(1, (v - a) / (b - a))); return x * x * (3 - 2 * x); };
 
-    var anim = [], counterState = [], pars = [], chips = [];
+    var anim = [], counterState = [], pars = [];
 
     function collect() {
       anim = Array.prototype.slice.call(root.querySelectorAll('.reveal, .mask, .rule'));
       pars = Array.prototype.slice.call(root.querySelectorAll('.par'));
-      chips = Array.prototype.slice.call(root.querySelectorAll('.chip-float'));
       counterState = Array.prototype.slice.call(root.querySelectorAll('.stat strong')).map(function (el) {
         return { el: el, raw: el.textContent.trim(), running: false, shown: false };
       });
@@ -363,6 +362,47 @@
       c.el.textContent = '0' + suffix;
       requestAnimationFrame(tick);
     }
+
+    /* ---- before → after ----
+       Desktop: the stage is pinned (sticky) and scroll progress through the track slides the
+       four shots out from behind the product card (--k per shot: 1 = hidden behind it, 0 = in place;
+       --e on the board drives the card scale and the "After" labels).
+       Mobile: no pin, each shot eases in as it scrolls into view. Reduced motion: stays in the final state. */
+    var baTrack = $('ba-track'), baStage = $('ba-stage'), baBoard = $('ba-board');
+    var baShots = Array.prototype.slice.call(root.querySelectorAll('.ba-shot'));
+    var BA_TOP = 68;                                               // sticky offset = height of the scrolled nav
+    var BA_WIN = [[0.20, 0.68], [0.04, 0.50], [0.04, 0.50], [0.20, 0.68]]; // inner shots first, outer ones after
+    var baLast = {};
+
+    function baSet(el, name, v, key) {
+      var s = v.toFixed(3);
+      if (baLast[key] !== s) { baLast[key] = s; el.style.setProperty(name, s); }
+    }
+
+    function updateBA(vh) {
+      if (!baTrack || !baBoard || reduce) return;
+      var i, k, e = 0;
+      if ((window.innerWidth || 1200) > 900) {
+        var r = baTrack.getBoundingClientRect();
+        var p = Math.max(0, Math.min(1, (BA_TOP - r.top) / Math.max(1, r.height - baStage.offsetHeight)));
+        for (i = 0; i < baShots.length; i++) baSet(baShots[i], '--k', 1 - smooth(BA_WIN[i][0], BA_WIN[i][1], p), i);
+        e = smooth(0.3, 0.75, p);
+      } else {
+        for (i = 0; i < baShots.length; i++) {
+          k = 1 - smooth(0, 1, (vh * 0.94 - baShots[i].getBoundingClientRect().top) / (vh * 0.2));
+          baSet(baShots[i], '--k', k, i);
+          e = Math.max(e, 1 - k);
+        }
+      }
+      baSet(baBoard, '--e', e, 'e');
+    }
+
+    var baWatch = $('ba-watch');
+    if (baWatch) baWatch.addEventListener('click', function () {
+      for (var i = 0; i < PROJECTS.length; i++) {
+        if (PROJECTS[i].full === 'assets/w8.mp4') { openPlay(PROJECTS[i], baWatch); return; }
+      }
+    });
 
     var look = 0, pointerSeen = false, lastPointer = -1e9;
     var raf = 0, last = performance.now();
@@ -404,6 +444,8 @@
         pars[i].style.transform = 'translateY(' + Math.round(off * -26) + 'px)';
       }
 
+      updateBA(vh);
+
       var heroH = Math.max(1, hero.getBoundingClientRect().height);
       var p = Math.max(0, Math.min(1, scrollY / heroH));
       var show = smooth(0.45, 0.9, p);
@@ -436,14 +478,6 @@
       var px = Math.max(-1, Math.min(1, nx + sway));
       var py = Math.max(-1, Math.min(1, ny));
       var tiltV = Math.max(-7, Math.min(7, vel * 0.006));
-
-      for (i = 0; i < chips.length; i++) {
-        var ch = chips[i];
-        var d = parseFloat(ch.getAttribute('data-depth')) || 1;
-        var dx = nx * d * 12 + Math.sin(sec * 0.4 + i * 1.7) * d * 4;
-        var dy = ny * d * 8 + Math.cos(sec * 0.33 + i * 2.1) * d * 5;
-        ch.style.transform = 'translate3d(' + dx.toFixed(1) + 'px, ' + dy.toFixed(1) + 'px, 0)';
-      }
 
       if (sprite) {
         // idle: a slow, small sweep so she never looks frozen.
