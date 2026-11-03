@@ -3,35 +3,36 @@
 
   var CATS = { cgi: 'AI CGI', brand: 'Brand Commercials', trend: 'Trend-Led', expert: 'Expert Branding' };
 
+  // client / country: only what the site or the brief already states. Left out when unknown, never guessed.
   var PROJECTS = [
-    { title: 'The shave that never ends', cat: 'expert',
+    { title: 'The shave that never ends', cat: 'expert', client: 'Medical group',
       summary: 'A wordless story about the daily cycle of shaving and regrowth, and the clinic session that ends it. Made for Al Hoqail Medical Group.',
       stat: '215,000+ views', loop: 'assets/w1-loop.webp', full: 'assets/w1.mp4' },
-    { title: 'Every piece has its animal', cat: 'cgi', tag: 'Concept',
+    { title: 'Every piece has its animal', cat: 'cgi', tag: 'Concept', client: 'Self-initiated concept',
       summary: 'A lioness in ruby, a panther in emerald, a wolf in diamonds — each animal wears the piece that matches it. Self-initiated concept inspired by L’azurde.',
       loop: 'assets/w10-loop.webp', full: 'assets/w10.mp4' },
-    { title: 'Say it out loud', cat: 'expert',
+    { title: 'Say it out loud', cat: 'expert', client: 'Child-psychology specialist', country: 'Jordan',
       summary: 'A boy learns to say no in three steps. Written and voiced in Jordanian dialect for a child-psychology specialist building her practice.',
       stat: '35,000+ views', loop: 'assets/w2-loop.webp', full: 'assets/w2.mp4' },
-    { title: 'When the kitchen goes down', cat: 'brand',
+    { title: 'When the kitchen goes down', cat: 'brand', client: 'Maintenance company', country: 'UAE',
       summary: 'Service stops mid-rush: the flame dies, the orders pile up, and one call brings the crew. A dialogue-free film for the maintenance arm of Miz in the UAE.',
       loop: 'assets/w3-loop.webp', full: 'assets/w3.mp4' },
-    { title: 'Her trend, not the trend', cat: 'trend',
+    { title: 'Her trend, not the trend', cat: 'trend', client: 'Dermatology clinic', country: 'Saudi Arabia',
       summary: 'A known trend taken apart and rebuilt around one doctor’s identity, down to her own cup and her own screen. Made for Dr. Amira Kamal.',
       loop: 'assets/w4-loop.webp', full: 'assets/w4.mp4' },
-    { title: 'Meet Layan', cat: 'expert',
+    { title: 'Meet Layan', cat: 'expert', client: 'Dermatology clinic', country: 'Saudi Arabia',
       summary: 'A miniature 3D version of the clinic’s own assistant, designed from a single photo, launching the series she now hosts. Made for Dr. Amira Kamal in Saudi Arabia.',
       loop: 'assets/w5-loop.webp', full: 'assets/w5.mp4' },
-    { title: 'Out of the billboard', cat: 'cgi',
+    { title: 'Out of the billboard', cat: 'cgi', client: 'Dermatology clinic', country: 'Saudi Arabia',
       summary: 'A product handed off a city billboard straight into a hand on the street. Built around REJURAN’s own packaging for Dr. Amira Kamal.',
       loop: 'assets/w6-loop.webp', full: 'assets/w6.mp4' },
-    { title: 'The storefront that serves itself', cat: 'cgi',
+    { title: 'The storefront that serves itself', cat: 'cgi', client: 'Cafe & restaurant',
       summary: 'Giant dishes rise out of a cafe facade until the whole menu is standing on the street. Produced through a marketing agency for Menta Cafe & Restaurant.',
       loop: 'assets/w7-loop.webp', full: 'assets/w7.mp4' },
-    { title: 'Results, out of the bag', cat: 'brand',
+    { title: 'Results, out of the bag', cat: 'brand', client: 'Dermatology and aesthetics clinic', country: 'Saudi Arabia',
       summary: 'Filler cases lift out of the clinic’s own shopping bag and arrange themselves, turning a plain before-and-after into a product reveal. Made for a dermatology and aesthetics clinic in Saudi Arabia.',
       loop: 'assets/w8-loop.webp', full: 'assets/w8.mp4' },
-    { title: 'Skip the invoice', cat: 'cgi', tag: 'Concept',
+    { title: 'Skip the invoice', cat: 'cgi', tag: 'Concept', client: 'Self-initiated concept',
       summary: 'A product reveal built around one line: skip the invoice, do the collab. Self-initiated concept for COLAB, not a commissioned campaign.',
       loop: 'assets/w9-loop.webp', full: 'assets/w9.mp4' }
   ];
@@ -73,71 +74,119 @@
     });
   }
 
+  function findFilm(full) {
+    for (var i = 0; i < PROJECTS.length; i++) if (PROJECTS[i].full === full) return PROJECTS[i];
+    return null;
+  }
+
+  // one film card; used by the Work grid and by the example under each audience
+  function makeCard(p) {
+    var art = document.createElement('article');
+    art.className = 'card reveal in';
+
+    var media = document.createElement('div');
+    media.className = 'card-media';
+
+    var cat = document.createElement('span');
+    cat.className = 'card-cat';
+    cat.textContent = CATS[p.cat];
+    media.appendChild(cat);
+
+    if (p.tag) {
+      var tg = document.createElement('span');
+      tg.className = 'card-tag';
+      tg.textContent = p.tag;
+      media.appendChild(tg);
+    }
+
+    var img = document.createElement('img');
+    img.className = 'card-loop';
+    img.src = p.loop;
+    img.alt = p.title;
+    img.loading = 'lazy';
+    img.decoding = 'async';
+    media.appendChild(img);
+
+    var open = document.createElement('button');
+    open.type = 'button';
+    open.className = 'card-open';
+    open.setAttribute('aria-label', 'Play ' + p.title);
+    open.addEventListener('click', function () { openPlay(p, open); });
+    media.appendChild(open);
+
+    var tag = document.createElement('span');
+    tag.className = 'play-tag';
+    tag.setAttribute('aria-hidden', 'true');
+    tag.textContent = 'Watch the film';
+    media.appendChild(tag);
+
+    var body = document.createElement('div');
+    body.className = 'card-body';
+    var who = [p.client, p.country].filter(Boolean).join(' · ');
+    if (who) {
+      var meta = document.createElement('p');
+      meta.className = 'card-meta';
+      meta.textContent = who;
+      body.appendChild(meta);
+    }
+    var h3 = document.createElement('h3');
+    h3.className = 'card-title';
+    h3.textContent = p.title;
+    var sum = document.createElement('p');
+    sum.className = 'card-sum';
+    sum.textContent = p.summary;
+    body.appendChild(h3);
+    body.appendChild(sum);
+    if (p.stat) {
+      var st = document.createElement('p');
+      st.className = 'card-stat';
+      st.textContent = p.stat;
+      body.appendChild(st);
+    }
+
+    art.appendChild(media);
+    art.appendChild(body);
+    return art;
+  }
+
   function renderGrid() {
     gridEl.textContent = '';
     PROJECTS.filter(function (p) { return filter === 'all' || p.cat === filter; }).forEach(function (p) {
-      var art = document.createElement('article');
-      art.className = 'card reveal in';
-
-      var media = document.createElement('div');
-      media.className = 'card-media';
-
-      var cat = document.createElement('span');
-      cat.className = 'card-cat';
-      cat.textContent = CATS[p.cat];
-      media.appendChild(cat);
-
-      if (p.tag) {
-        var tg = document.createElement('span');
-        tg.className = 'card-tag';
-        tg.textContent = p.tag;
-        media.appendChild(tg);
-      }
-
-      var img = document.createElement('img');
-      img.className = 'card-loop';
-      img.src = p.loop;
-      img.alt = p.title;
-      img.loading = 'lazy';
-      img.decoding = 'async';
-      media.appendChild(img);
-
-      var open = document.createElement('button');
-      open.type = 'button';
-      open.className = 'card-open';
-      open.setAttribute('aria-label', 'Play ' + p.title);
-      open.addEventListener('click', function () { openPlay(p, open); });
-      media.appendChild(open);
-
-      var tag = document.createElement('span');
-      tag.className = 'play-tag';
-      tag.setAttribute('aria-hidden', 'true');
-      tag.textContent = 'Watch the film';
-      media.appendChild(tag);
-
-      var body = document.createElement('div');
-      body.className = 'card-body';
-      var h3 = document.createElement('h3');
-      h3.className = 'card-title';
-      h3.textContent = p.title;
-      var sum = document.createElement('p');
-      sum.className = 'card-sum';
-      sum.textContent = p.summary;
-      body.appendChild(h3);
-      body.appendChild(sum);
-      if (p.stat) {
-        var st = document.createElement('p');
-        st.className = 'card-stat';
-        st.textContent = p.stat;
-        body.appendChild(st);
-      }
-
-      art.appendChild(media);
-      art.appendChild(body);
-      gridEl.appendChild(art);
+      gridEl.appendChild(makeCard(p));
     });
     if (window.hhRefreshAnim) window.hhRefreshAnim();
   }
+
+  /* ---------- who it's for ---------- */
+  var audTabs = Array.prototype.slice.call(document.querySelectorAll('.seg-btn'));
+  var audPanels = Array.prototype.slice.call(document.querySelectorAll('.aud-panel'));
+
+  Array.prototype.forEach.call(document.querySelectorAll('.aud-example'), function (host) {
+    var p = findFilm(host.getAttribute('data-film'));
+    if (p) host.appendChild(makeCard(p));
+  });
+
+  function selectAudience(i, focus) {
+    audTabs.forEach(function (t, n) {
+      var on = n === i;
+      t.setAttribute('aria-selected', on ? 'true' : 'false');
+      t.tabIndex = on ? 0 : -1;
+      if (audPanels[n]) audPanels[n].hidden = !on;
+    });
+    if (focus) audTabs[i].focus();
+  }
+
+  audTabs.forEach(function (t, i) {
+    t.addEventListener('click', function () { selectAudience(i, false); });
+    t.addEventListener('keydown', function (e) {
+      var n = audTabs.length, k = -1;
+      if (e.key === 'ArrowRight') k = (i + 1) % n;
+      else if (e.key === 'ArrowLeft') k = (i + n - 1) % n;
+      else if (e.key === 'Home') k = 0;
+      else if (e.key === 'End') k = n - 1;
+      if (k >= 0) { e.preventDefault(); selectAudience(k, true); }
+    });
+  });
 
   /* ---------- lightbox ---------- */
   var lb = $('hh-lightbox'), player = $('hh-player'), lbCap = $('hh-lb-cap');
@@ -399,9 +448,8 @@
 
     var baWatch = $('ba-watch');
     if (baWatch) baWatch.addEventListener('click', function () {
-      for (var i = 0; i < PROJECTS.length; i++) {
-        if (PROJECTS[i].full === 'assets/w8.mp4') { openPlay(PROJECTS[i], baWatch); return; }
-      }
+      var p = findFilm('assets/w8.mp4');
+      if (p) openPlay(p, baWatch);
     });
 
     var look = 0, pointerSeen = false, lastPointer = -1e9;

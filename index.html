@@ -178,6 +178,22 @@
     .ba-shot.s4 { grid-column: 5; grid-row: 1; --dx: -2.5; }
   }
 
+  /* who it's for — one toggle, three audiences; each panel carries its own copy and an example film */
+  .seg { display: inline-flex; gap: 4px; margin: 34px 0 44px; padding: 5px; border: 1px solid var(--line); border-radius: 999px; background: rgba(20, 17, 19, .6); }
+  .seg-btn { min-height: 44px; padding: 0 22px; border: 0; border-radius: 999px; background: transparent; color: var(--ink-2); font: 500 15px var(--body); cursor: pointer; transition: background .35s var(--ease), color .3s; }
+  .seg-btn:hover { color: var(--ink); }
+  .seg-btn[aria-selected="true"] { background: var(--accent); color: #141A10; }
+  .aud-panel { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 56px; align-items: start; animation: panelIn .55s var(--ease) both; }
+  .aud-title { margin: 0 0 16px; max-width: 16ch; font-family: var(--serif); font-stretch: 102%; font-weight: 600; font-size: clamp(30px, 3.6vw, 50px); line-height: 1.04; letter-spacing: -.028em; color: var(--ink); text-wrap: balance; }
+  .aud-lead { margin: 0 0 30px; max-width: 40ch; font-size: clamp(17px, 1.5vw, 19px); line-height: 1.6; color: var(--ink-2); }
+  .aud-label { margin: 0 0 10px; font-size: 12.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3); }
+  .aud-problem { margin: 0 0 30px; max-width: 46ch; font-size: 17px; line-height: 1.6; color: var(--ink); }
+  .aud-list { margin: 0 0 34px; padding: 0; list-style: none; max-width: 52ch; border-bottom: 1px solid var(--line); }
+  .aud-list li { position: relative; padding: 15px 0 15px 30px; border-top: 1px solid var(--line); font-size: 16.5px; line-height: 1.5; color: var(--ink); }
+  .aud-list li::before { content: ""; position: absolute; left: 4px; top: 24px; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); }
+  .aud-example { max-width: 360px; }
+  @keyframes panelIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+
   /* about */
   .about-grid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 56px; align-items: start; }
   .portrait { position: relative; overflow: hidden; aspect-ratio: 4 / 5; border-radius: 4px; background: var(--sand); border: 1px solid var(--line); display: flex; align-items: flex-end; justify-content: center; }
@@ -218,6 +234,7 @@
   .card:hover .card-open::after { opacity: 1; }
   .play-tag { position: absolute; left: 14px; bottom: 14px; display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; border-radius: 999px; background: rgba(12, 10, 11, .92); font: 500 13px var(--body); color: var(--ink); opacity: 0; transform: translateY(6px); transition: opacity .4s var(--ease), transform .4s var(--ease); pointer-events: none; }
   .card:hover .play-tag, .card-open:focus-visible ~ .play-tag { opacity: 1; transform: none; }
+  .card-meta { margin: 0 0 8px; font-size: 13px; letter-spacing: .02em; color: var(--ink-3); }
   .card-stat { margin: 10px 0 0; font-size: 13px; font-weight: 500; color: var(--accent); }
   .card:hover .card-media { transform: translateY(-4px); }
   .card-tag { position: absolute; right: 14px; top: 14px; z-index: 2; padding: 6px 10px; border-radius: 999px; background: var(--accent); font-size: 12px; color: #141A10; }
@@ -302,6 +319,9 @@
     .ba-shot { transform: translate3d(0, calc(var(--k) * 28px), 0) scale(calc(1 - .05 * var(--k))); }
     .chap { padding: 72px 0; }
     .about-grid, .flow { grid-template-columns: minmax(0, 1fr); gap: 40px; }
+    .aud-panel { grid-template-columns: minmax(0, 1fr); gap: 40px; }
+    .aud-example { max-width: 420px; }
+    .seg { margin: 28px 0 36px; }
     .portrait { aspect-ratio: 4 / 3; }
     .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
     .contact-grid, .facts { grid-template-columns: minmax(0, 1fr); }
@@ -313,6 +333,8 @@
   }
   @media (max-width: 600px) {
     .grid, .row2 { grid-template-columns: minmax(0, 1fr); }
+    .seg { display: grid; width: 100%; border-radius: 26px; }
+    .seg-btn { padding: 0 16px; }
     .modal { padding: 24px; }
     .hero-cta .btn { flex: 1 1 auto; }
     .brand { font-size: 17px; }
@@ -420,6 +442,67 @@
               <button class="btn btn-line" type="button" id="ba-watch">Watch the film</button>
             </div>
           </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="audience" class="chap">
+      <div class="wrap">
+        <div class="ch reveal"><span class="ch-num">→</span><span>Audience</span></div>
+        <h2 class="h2 reveal"><span class="mask"><span>Who it’s for.</span></span></h2>
+
+        <div class="seg reveal" role="tablist" aria-label="Who it’s for">
+          <button class="seg-btn" type="button" role="tab" id="aud-tab-clinics" aria-controls="aud-panel-clinics" aria-selected="true">Clinics &amp; doctors</button>
+          <button class="seg-btn" type="button" role="tab" id="aud-tab-brands" aria-controls="aud-panel-brands" aria-selected="false" tabindex="-1">Brands &amp; products</button>
+          <button class="seg-btn" type="button" role="tab" id="aud-tab-creators" aria-controls="aud-panel-creators" aria-selected="false" tabindex="-1">Creators &amp; experts</button>
+        </div>
+
+        <div class="aud-panel" role="tabpanel" id="aud-panel-clinics" aria-labelledby="aud-tab-clinics">
+          <div class="aud-copy">
+            <h3 class="aud-title">A doctor is their own strongest ad.</h3>
+            <p class="aud-lead">I turn your expertise into a video series people remember.</p>
+            <p class="aud-label">The problem</p>
+            <p class="aud-problem">Your results and your expertise are hard to show in a single post.</p>
+            <p class="aud-label">What I’ll do for you</p>
+            <ul class="aud-list">
+              <li>Turn your treatments and know-how into a series of short films.</li>
+              <li>Write and voice them in your dialect: Egyptian, Gulf, Levantine Arabic or English.</li>
+              <li>Keep every character, product and logo identical from the first film to the last.</li>
+            </ul>
+          </div>
+          <div class="aud-example" data-film="assets/w1.mp4"></div>
+        </div>
+
+        <div class="aud-panel" role="tabpanel" id="aud-panel-brands" aria-labelledby="aud-tab-brands" hidden>
+          <div class="aud-copy">
+            <h3 class="aud-title">Your product doesn’t need a shoot day.</h3>
+            <p class="aud-lead">It needs an idea. I build the whole film around it.</p>
+            <p class="aud-label">The problem</p>
+            <p class="aud-problem">A product needs a reason to be watched, not only a clean shot.</p>
+            <p class="aud-label">What I’ll do for you</p>
+            <ul class="aud-list">
+              <li>Find the one moment that stops the scroll in the first second or two.</li>
+              <li>Build the film around your own packaging and logo.</li>
+              <li>Deliver it ready to post, with voice, edit and captions.</li>
+            </ul>
+          </div>
+          <div class="aud-example" data-film="assets/w3.mp4"></div>
+        </div>
+
+        <div class="aud-panel" role="tabpanel" id="aud-panel-creators" aria-labelledby="aud-tab-creators" hidden>
+          <div class="aud-copy">
+            <h3 class="aud-title">Your story, made to be watched and saved.</h3>
+            <p class="aud-lead">I turn what you know into a short film in your own voice.</p>
+            <p class="aud-label">The problem</p>
+            <p class="aud-problem">You know the subject. The hard part is making it look and sound like you.</p>
+            <p class="aud-label">What I’ll do for you</p>
+            <ul class="aud-list">
+              <li>Script and voice it in the dialect your audience actually speaks.</li>
+              <li>Rebuild a trend around your identity instead of copying it.</li>
+              <li>Keep your look and voice consistent across a whole series.</li>
+            </ul>
+          </div>
+          <div class="aud-example" data-film="assets/w2.mp4"></div>
         </div>
       </div>
     </section>
