@@ -8,6 +8,9 @@ Vercel from `main` (no build step; the repo root is served as-is).
 - `index.html` — markup, styles, and one small inline bootstrap script
 - `app.js` — all behaviour (character sprite loop, scroll reveals, work grid,
   process panel, booking modal, video lightbox)
+- `fx.js` — the motion layer: hand-written WebGL gold-sphere field (no libraries),
+  the opening impact, the hero's 3D parallax and the card tilt. Respects
+  `prefers-reduced-motion` (draws once, then stays still)
 - `assets/` — character sprite sheet, portraits, film loops (`w*-loop.webp`),
   films (`w*.mp4`), social card
 - `vercel.json` — security headers, CSP, caching
