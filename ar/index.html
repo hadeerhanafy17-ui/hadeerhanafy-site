@@ -28,7 +28,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400..800&amp;display=swap">
-<link rel="preload" as="image" href="/assets/char-sprite.webp">
+<link rel="preload" as="image" href="/assets/char-sprite.webp" fetchpriority="high">
 <script>document.documentElement.setAttribute('data-js','1');</script>
 <link rel="stylesheet" href="/styles.css">
 </head>
@@ -47,7 +47,7 @@
   <div class="float" id="hh-float" aria-hidden="true">
     <span class="float-glow"></span>
     <div class="char-tilt" id="hh-char2">
-      <img class="char-base" src="/assets/hadeer-full.png" alt="">
+      <img class="char-base" src="/assets/hadeer-full.webp" alt="" width="430" height="1011" loading="lazy" decoding="async">
     </div>
   </div>
 
@@ -227,7 +227,7 @@
     <section id="about" class="chap">
       <div class="wrap about-grid">
         <div class="portrait par">
-          <img class="portrait-char" src="/assets/about-look.png" alt="شخصية هدير حنفي ثلاثية الأبعاد" width="520" height="650">
+          <img class="portrait-char" src="/assets/about-look.webp" loading="lazy" decoding="async" alt="شخصية هدير حنفي ثلاثية الأبعاد" width="520" height="650">
         </div>
         <div>
           <div class="ch reveal"><span class="ch-num">02</span><span>عني</span></div>
