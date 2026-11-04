@@ -5,36 +5,45 @@
 
   // client / country: only what the site or the brief already states. Left out when unknown, never guessed.
   var PROJECTS = [
+    { title: 'From the desk to the sky', cat: 'cgi', client: 'Travel content creator',
+      summary: 'A toy plane lifts off a laptop keyboard, becomes a real jet over a seaside town, and lands the creator in a window seat. One continuous move from desk to destination.',
+      poster: 'assets/w11-poster.webp', full: 'assets/w11.mp4' },
     { title: 'The shave that never ends', cat: 'expert', client: 'Medical group',
       summary: 'A wordless story about the daily cycle of shaving and regrowth, and the clinic session that ends it. Made for Al Hoqail Medical Group.',
-      stat: '215,000+ views', loop: 'assets/w1-loop.webp', full: 'assets/w1.mp4' },
-    { title: 'Every piece has its animal', cat: 'cgi', tag: 'Concept', client: 'Self-initiated concept',
-      summary: 'A lioness in ruby, a panther in emerald, a wolf in diamonds — each animal wears the piece that matches it. Self-initiated concept inspired by L’azurde.',
-      loop: 'assets/w10-loop.webp', full: 'assets/w10.mp4' },
+      stat: '215,000+ views', poster: 'assets/w1-poster.webp', full: 'assets/w1.mp4' },
+    { title: 'Wherever the laptop opens', cat: 'expert', client: 'Travel content creator',
+      summary: 'The same creator, recognisable in every scene: a stone room, a city from above, the planet turning, an icy pier at sunset. One face held steady across a whole travel story.',
+      poster: 'assets/w12-poster.webp', full: 'assets/w12.mp4' },
+    { title: 'The route, drawn on the map', cat: 'trend', client: 'Travel content creator', wide: true,
+      summary: 'A glowing route draws itself from Denmark to Turkey on a dark map, so a flight reads as a story in six seconds.',
+      poster: 'assets/w13-poster.webp', full: 'assets/w13.mp4' },
     { title: 'Say it out loud', cat: 'expert', client: 'Child-psychology specialist', country: 'Jordan',
       summary: 'A boy learns to say no in three steps. Written and voiced in Jordanian dialect for a child-psychology specialist building her practice.',
-      stat: '35,000+ views', loop: 'assets/w2-loop.webp', full: 'assets/w2.mp4' },
+      stat: '35,000+ views', poster: 'assets/w2-poster.webp', full: 'assets/w2.mp4' },
     { title: 'When the kitchen goes down', cat: 'brand', client: 'Maintenance company', country: 'UAE',
       summary: 'Service stops mid-rush: the flame dies, the orders pile up, and one call brings the crew. A dialogue-free film for the maintenance arm of Miz in the UAE.',
-      loop: 'assets/w3-loop.webp', full: 'assets/w3.mp4' },
+      poster: 'assets/w3-poster.webp', full: 'assets/w3.mp4' },
     { title: 'Her trend, not the trend', cat: 'trend', client: 'Dermatology clinic', country: 'Saudi Arabia',
       summary: 'A known trend taken apart and rebuilt around one doctor’s identity, down to her own cup and her own screen. Made for Dr. Amira Kamal.',
-      loop: 'assets/w4-loop.webp', full: 'assets/w4.mp4' },
+      poster: 'assets/w4-poster.webp', full: 'assets/w4.mp4' },
     { title: 'Meet Layan', cat: 'expert', client: 'Dermatology clinic', country: 'Saudi Arabia',
       summary: 'A miniature 3D version of the clinic’s own assistant, designed from a single photo, launching the series she now hosts. Made for Dr. Amira Kamal in Saudi Arabia.',
-      loop: 'assets/w5-loop.webp', full: 'assets/w5.mp4' },
+      poster: 'assets/w5-poster.webp', full: 'assets/w5.mp4' },
     { title: 'Out of the billboard', cat: 'cgi', client: 'Dermatology clinic', country: 'Saudi Arabia',
       summary: 'A product handed off a city billboard straight into a hand on the street. Built around REJURAN’s own packaging for Dr. Amira Kamal.',
-      loop: 'assets/w6-loop.webp', full: 'assets/w6.mp4' },
+      poster: 'assets/w6-poster.webp', full: 'assets/w6.mp4' },
     { title: 'The storefront that serves itself', cat: 'cgi', client: 'Cafe & restaurant',
       summary: 'Giant dishes rise out of a cafe facade until the whole menu is standing on the street. Produced through a marketing agency for Menta Cafe & Restaurant.',
-      loop: 'assets/w7-loop.webp', full: 'assets/w7.mp4' },
+      poster: 'assets/w7-poster.webp', full: 'assets/w7.mp4' },
     { title: 'Results, out of the bag', cat: 'brand', client: 'Dermatology and aesthetics clinic', country: 'Saudi Arabia',
       summary: 'Filler cases lift out of the clinic’s own shopping bag and arrange themselves, turning a plain before-and-after into a product reveal. Made for a dermatology and aesthetics clinic in Saudi Arabia.',
-      loop: 'assets/w8-loop.webp', full: 'assets/w8.mp4' },
+      poster: 'assets/w8-poster.webp', full: 'assets/w8.mp4' },
     { title: 'Skip the invoice', cat: 'cgi', tag: 'Concept', client: 'Self-initiated concept',
       summary: 'A product reveal built around one line: skip the invoice, do the collab. Self-initiated concept for COLAB, not a commissioned campaign.',
-      loop: 'assets/w9-loop.webp', full: 'assets/w9.mp4' }
+      poster: 'assets/w9-poster.webp', full: 'assets/w9.mp4' },
+    { title: 'Every piece has its animal', cat: 'cgi', tag: 'Concept', client: 'Self-initiated concept',
+      summary: 'A lioness in ruby, a panther in emerald, a wolf in diamonds — each animal wears the piece that matches it. Self-initiated concept inspired by L’azurde.',
+      poster: 'assets/w10-poster.webp', full: 'assets/w10.mp4' }
   ];
 
   var STEPS = [
@@ -55,6 +64,46 @@
   var $ = function (id) { return document.getElementById(id); };
   var root = $('hh-root');
   var pad = function (n) { return n < 10 ? '0' + n : String(n); };
+
+  /* ---------- card previews: a sharp still, and the real film plays in its place on hover (or when a card is mostly in view on touch) ---------- */
+  var CAN_HOVER = !!(window.matchMedia && window.matchMedia('(hover: hover) and (pointer: fine)').matches);
+  var REDUCE = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  var livePreview = null;
+  var io = (!CAN_HOVER && 'IntersectionObserver' in window) ? new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      var m = e.target;
+      if (e.intersectionRatio >= 0.65) { if (m.hhStart) m.hhStart(); } else if (m.hhStop) m.hhStop();
+    });
+  }, { threshold: [0, 0.65, 1] }) : null;
+
+  function attachPreview(media, p, before) {
+    if (p.wide || REDUCE) return;                                    // wide films are cropped in a portrait card, so they keep the still
+    var v = null;
+    function stop() {
+      if (!v) return;
+      v.pause();
+      if (v.parentNode) v.parentNode.removeChild(v);
+      v = null;
+      if (livePreview === stop) livePreview = null;
+    }
+    function start() {
+      if (v) return;
+      if (livePreview) livePreview();                                // one preview at a time
+      v = document.createElement('video');
+      v.className = 'card-video';
+      v.muted = true; v.setAttribute('muted', ''); v.loop = true; v.playsInline = true; v.preload = 'auto';
+      v.setAttribute('aria-hidden', 'true'); v.tabIndex = -1;
+      v.src = p.full;
+      media.insertBefore(v, before);
+      v.addEventListener('playing', function () { v.classList.add('on'); }, { once: true });
+      var pr = v.play();
+      if (pr && pr.catch) pr.catch(stop);
+      livePreview = stop;
+    }
+    media.hhStart = start; media.hhStop = stop;
+    if (CAN_HOVER) { media.addEventListener('pointerenter', start); media.addEventListener('pointerleave', stop); }
+    else if (io) io.observe(media);
+  }
 
   /* ---------- work grid ---------- */
   var filter = 'all';
@@ -101,7 +150,8 @@
 
     var img = document.createElement('img');
     img.className = 'card-loop';
-    img.src = p.loop;
+    img.src = p.poster;
+    img.width = 640; img.height = 800;
     img.alt = p.title;
     img.loading = 'lazy';
     img.decoding = 'async';
@@ -113,6 +163,7 @@
     open.setAttribute('aria-label', 'Play ' + p.title);
     open.addEventListener('click', function () { openPlay(p, open); });
     media.appendChild(open);
+    attachPreview(media, p, open);
 
     var tag = document.createElement('span');
     tag.className = 'play-tag';
@@ -150,6 +201,7 @@
   }
 
   function renderGrid() {
+    if (io) io.disconnect();
     gridEl.textContent = '';
     PROJECTS.filter(function (p) { return filter === 'all' || p.cat === filter; }).forEach(function (p) {
       gridEl.appendChild(makeCard(p));
@@ -196,7 +248,8 @@
     lbReturn = src || document.activeElement;
     lb.setAttribute('aria-label', p.title);
     lbCap.textContent = p.title;
-    player.poster = p.loop;
+    player.poster = p.poster;
+    lb.classList.toggle('wide', !!p.wide);
     player.src = p.full;
     player.currentTime = 0;
     player.muted = false;

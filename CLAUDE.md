@@ -12,8 +12,8 @@ Vercel from `main` (no build step; the repo root is served as-is).
   real perspective (they dodge the cursor, shift with parallax and speed up as you scroll),
   the hero's 3D parallax (character and headline) and the card tilt. Respects
   `prefers-reduced-motion` (draws once, then stays still)
-- `assets/` — character sprite sheet, portraits, film loops (`w*-loop.webp`),
-  films (`w*.mp4`), social card
+- `assets/` — character sprite sheet, portraits, film stills (`w*-poster.webp`, 640x800,
+  cut from each film at full resolution), films (`w*.mp4`, web-encoded, faststart), social card
 - `vercel.json` — security headers, CSP, caching
 
 ## Security rules — apply to every change
