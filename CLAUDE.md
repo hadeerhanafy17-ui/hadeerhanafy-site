@@ -10,7 +10,7 @@ Vercel from `main` (no build step; the repo root is served as-is).
   process panel, booking modal, video lightbox)
 - `fx.js` — the motion layer, hand-written WebGL with no libraries: polished gold spheres in
   real perspective (they dodge the cursor, shift with parallax and speed up as you scroll),
-  the opening impact, the hero's 3D parallax and the card tilt. Respects
+  the hero's 3D parallax (character and headline) and the card tilt. Respects
   `prefers-reduced-motion` (draws once, then stays still)
 - `assets/` — character sprite sheet, portraits, film loops (`w*-loop.webp`),
   films (`w*.mp4`), social card

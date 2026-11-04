@@ -1,5 +1,5 @@
 /* fx.js — the motion layer: a field of polished gold spheres in real perspective (WebGL, no libraries),
-   a few of them passing in front of the page, the opening impact, the hero's 3D parallax and card tilt.
+   a few of them passing in front of the page, the hero's 3D parallax and card tilt.
    Everything is inert under prefers-reduced-motion (the back field is drawn once, nothing moves). */
 (function () {
   'use strict';
@@ -175,41 +175,8 @@
     blur: function (d) { return clamp((7.5 - d) / 5.1, 0, 1) * 0.9; }                        // bokeh as they pass the lens
   });
 
-  /* ---------- opening impact: a gold sphere rushes the lens, hits the screen, bursts ---------- */
-  function burst() {
-    for (var i = 0; i < 22; i++) {
-      var a = Math.random() * 6.283, sp = rand(0.5, 1.9);
-      front.extra.push({
-        d: 4, px: 0, py: 0, pr: rand(0.012, 0.03), pb: 0.05, pa: 1, seed: Math.random(), life: 0, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp,
-        step: function (s, dt) { s.life += dt; s.vy -= 0.9 * dt; s.px += s.vx * dt; s.py += s.vy * dt; s.pa = 1 - smooth(0.45, 1, s.life); return s.life < 1; }
-      });
-    }
-  }
-  function hit() {
-    var imp = $('impact'), main = document.querySelector('main');
-    if (imp) { imp.classList.add('go'); setTimeout(function () { imp.classList.remove('go'); }, 800); }
-    if (main) { main.classList.add('shake'); setTimeout(function () { main.classList.remove('shake'); }, 520); }
-    burst();
-  }
-  function intro() {
-    if (reduce || !front || window.scrollY > 40) return;
-    try { if (sessionStorage.getItem('hh-intro') === '1') return; sessionStorage.setItem('hh-intro', '1'); } catch (e) {}
-    var t0 = performance.now() + 450, dur = 1000;                                              // the hero copy starts revealing first
-    front.extra.push({
-      d: 14, px: 0, py: 0.02, pr: 0, pb: 0, pa: 0, seed: 0.37,
-      step: function (s) {
-        var p = clamp((performance.now() - t0) / dur, 0, 1);
-        if (p <= 0) { s.pa = 0; return true; }
-        s.d = 14 - 12.9 * Math.pow(p, 2.4);                                                    // accelerates into the lens
-        s.pr = 0.014 + 1.3 * Math.pow(p, 3.2); s.pb = 0.25 * smooth(0.75, 1, p); s.pa = 1;
-        if (p >= 1) { hit(); return false; }
-        return true;
-      }
-    });
-  }
-
   /* ---------- hero: the screen and the character parallax in 3D ---------- */
-  var stage = $('stage3d');
+  var stage = $('home');   // --px / --py live on the hero, so the character and the headline both read them
   function updateStage() {
     if (!stage || reduce || window.scrollY > (window.innerHeight || 800) * 1.1) return;
     stage.style.setProperty('--px', ptr.x.toFixed(3));
@@ -240,7 +207,7 @@
   });
   document.addEventListener('visibilitychange', function () { if (!document.hidden) start(); });
 
-  if (reduce) { if (back) back.frame(0, 0, 0); } else { start(); intro(); }
+  if (reduce) { if (back) back.frame(0, 0, 0); } else { start(); }
 
   /* ---------- cards tilt in 3D under the cursor (the CSS reads --rx --ry --gx --gy) ---------- */
   if (!reduce && window.matchMedia && window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
