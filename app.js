@@ -456,6 +456,7 @@
     function updateBA(vh) {
       if (reduce) return;
       var desktop = (window.innerWidth || 1200) > 900;
+      if (!desktop) return;                                          // small screens use the touch card below
       baSecs.forEach(function (S) {
         if (!S.track || !S.board) return;
         var i, k, e = 0;
@@ -474,6 +475,34 @@
         baSet(S, S.board, '--e', e, 'e');
       });
     }
+
+    /* small screens: touch (or press and hold) the card to see the Before; release to go back to the After; a quick tap switches and keeps it */
+    baSecs.forEach(function (S) {
+      var b = S.board, st = b && b.querySelector('.ba-state');
+      if (!b) return;
+      var base = false, t0 = 0;                                       // base: false = After, true = Before
+      function small() { return (window.innerWidth || 1200) <= 900; }
+      function paint(before) {
+        b.classList.toggle('show-before', before);
+        if (st) st.textContent = before ? 'Before' : 'After';
+        b.setAttribute('aria-pressed', before ? 'true' : 'false');
+      }
+      b.setAttribute('role', 'button'); b.tabIndex = 0;
+      b.setAttribute('aria-label', 'Before and after. Touch and hold to see the before, tap to switch.');
+      b.addEventListener('contextmenu', function (e) { if (small()) e.preventDefault(); });
+      b.addEventListener('pointerdown', function () { if (!small()) return; t0 = performance.now(); paint(!base); });
+      function end(e) {
+        if (!t0) return;
+        var quick = performance.now() - t0 < 280;
+        t0 = 0;
+        if (quick && e.type === 'pointerup') base = !base;
+        paint(base);
+      }
+      b.addEventListener('pointerup', end); b.addEventListener('pointercancel', end); b.addEventListener('pointerleave', end);
+      b.addEventListener('keydown', function (e) {
+        if (small() && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); base = !base; paint(base); }
+      });
+    });
 
     Array.prototype.forEach.call(root.querySelectorAll('.ba-watch'), function (btn) {
       btn.addEventListener('click', function () {

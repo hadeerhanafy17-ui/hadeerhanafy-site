@@ -182,6 +182,8 @@
   .ba-foot { display: flex; flex-direction: column; align-items: center; gap: 16px; margin-top: 30px; text-align: center; }
   .ba-cap { margin: 0; max-width: 52ch; font-size: 15.5px; line-height: 1.6; color: var(--ink-2); }
   .ba-cap strong { font-weight: 600; color: var(--ink); }
+  .ba-after { display: contents; }
+  .ba-state, .ba-hint { display: none; }
   @media (min-width: 901px) {
     .ba-before { grid-column: 3; grid-row: 1; }
     .ba-lab-before { grid-column: 3; grid-row: 2; }
@@ -349,12 +351,17 @@
     .ba-track { height: auto; }
     .ba-stage { position: static; min-height: 0; padding: 64px 0 0; }
     .ba-head { margin-bottom: 28px; }
-    .ba-board { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; max-width: 520px; }
-    .ba-before { grid-column: 1 / -1; width: min(64%, 300px); justify-self: center; transform: none; }
-    .ba-lab { grid-column: 1 / -1; }
-    .ba-lab-after { margin-top: 14px; }
-    .ba-lab-after.r { display: none; }
-    .ba-shot { transform: translate3d(0, calc(var(--k) * 28px), 0) scale(calc(1 - .05 * var(--k))); }
+    /* one card you touch: it shows the After, and the Before while you hold it (a quick tap keeps it) */
+    .ba-board { display: block; position: relative; max-width: 420px; aspect-ratio: 4 / 5; overflow: hidden; border: 1px solid var(--line); border-radius: 6px; background: #14040a; touch-action: pan-y; cursor: pointer; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; outline-offset: 4px; }
+    .ba-board img { pointer-events: none; -webkit-touch-callout: none; }
+    .ba-after { position: absolute; inset: 0; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 3px; transition: opacity .28s var(--ease); }
+    .ba-shot { aspect-ratio: auto; border: 0; border-radius: 0; transform: none; opacity: 1; }
+    .ba-before { position: absolute; inset: 0; z-index: 2; width: 100%; aspect-ratio: auto; border: 0; border-radius: 0; box-shadow: none; transform: none; opacity: 0; transition: opacity .28s var(--ease); }
+    .ba-board.show-before .ba-before { opacity: 1; }
+    .ba-board.show-before .ba-after { opacity: 0; }
+    .ba-lab { display: none; }
+    .ba-state { display: block; position: absolute; left: 14px; top: 14px; z-index: 3; padding: 6px 12px; border-radius: 999px; background: rgba(14, 3, 6, .88); color: var(--accent); font-size: 12.5px; letter-spacing: .06em; pointer-events: none; }
+    .ba-hint { display: block; margin: 14px 0 0; text-align: center; font-size: 13.5px; color: var(--ink-3); }
     .chap { padding: 72px 0; }
     .about-grid { grid-template-columns: minmax(0, 1fr); gap: 40px; }
     .aud-panel { grid-template-columns: minmax(0, 1fr); gap: 40px; }
@@ -474,11 +481,15 @@
               <p class="ba-lab ba-lab-before">Before</p>
               <p class="ba-lab ba-lab-after l">After</p>
               <p class="ba-lab ba-lab-after r" aria-hidden="true">After</p>
+              <div class="ba-after">
               <figure class="ba-shot s1"><img src="assets/ba-jw-1.webp" alt="A lioness wearing the ruby pendant" width="400" height="500" loading="lazy" decoding="async"></figure>
               <figure class="ba-shot s2"><img src="assets/ba-jw-2.webp" alt="A black panther wearing the emerald pendant" width="400" height="500" loading="lazy" decoding="async"></figure>
               <figure class="ba-shot s3"><img src="assets/ba-jw-3.webp" alt="A tiger wearing the diamond chain" width="400" height="500" loading="lazy" decoding="async"></figure>
               <figure class="ba-shot s4"><img src="assets/ba-jw-4.webp" alt="A white wolf wearing the ruby necklace" width="400" height="500" loading="lazy" decoding="async"></figure>
+              </div>
+              <span class="ba-state" aria-hidden="true">After</span>
             </div>
+            <p class="ba-hint">Touch and hold to see the Before. Tap to switch.</p>
             <div class="ba-foot">
               <p class="ba-cap"><strong>Every piece has its animal.</strong> Frames from one film, a self-initiated concept inspired by L’azurde.</p>
               <button class="btn btn-line ba-watch" type="button" data-film="assets/w10.mp4">Watch the film</button>
@@ -501,11 +512,15 @@
               <p class="ba-lab ba-lab-before">Before</p>
               <p class="ba-lab ba-lab-after l">After</p>
               <p class="ba-lab ba-lab-after r" aria-hidden="true">After</p>
+              <div class="ba-after">
               <figure class="ba-shot s1"><img src="assets/ba-1.webp" alt="A result photo lifts out of the shopping bag" width="400" height="500" loading="lazy" decoding="async"></figure>
               <figure class="ba-shot s2"><img src="assets/ba-2.webp" alt="Two result photos lined up above the bag" width="400" height="500" loading="lazy" decoding="async"></figure>
               <figure class="ba-shot s3"><img src="assets/ba-3.webp" alt="A third result photo flies out of the bag" width="400" height="500" loading="lazy" decoding="async"></figure>
               <figure class="ba-shot s4"><img src="assets/ba-4.webp" alt="All three results arranged above the bag" width="400" height="500" loading="lazy" decoding="async"></figure>
+              </div>
+              <span class="ba-state" aria-hidden="true">After</span>
             </div>
+            <p class="ba-hint">Touch and hold to see the Before. Tap to switch.</p>
             <div class="ba-foot">
               <p class="ba-cap"><strong>Results, out of the bag.</strong> Frames from one film, made for a dermatology and aesthetics clinic in Saudi Arabia.</p>
               <button class="btn btn-line ba-watch" type="button" data-film="assets/w8.mp4">Watch the film</button>
