@@ -35,8 +35,9 @@
     --serif: 'Archivo', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
     --body: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
     --ease: cubic-bezier(.2, .7, .1, 1);
-    --accent: #EFC66F;
-    --gold-fill: var(--accent);
+    --accent: #EFC66F;           /* small, thin text (the AI Ads Creator label) */
+    --gold: #D4AC62;             /* the same gold as it appears at that size; for headings, numbers and fills */
+    --gold-fill: var(--gold);
   }
   html { scroll-behavior: smooth; background: #200509; }
   body { margin: 0; background: #200509; color: #EDE9E3; font-family: var(--body); -webkit-font-smoothing: antialiased; }
@@ -60,7 +61,7 @@
 
   .ch { display: flex; align-items: center; gap: 12px; margin: 0 0 26px; font-size: 13px; letter-spacing: .08em; color: var(--ink-3); }
   .ch-num { color: var(--accent); font-variant-numeric: tabular-nums; }
-  .h2 { text-shadow: 0 2px 20px rgba(18, 3, 7, .5); margin: 0; max-width: 18ch; font-family: var(--serif); font-stretch: 104%; font-weight: 650; font-size: clamp(36px, 4.6vw, 64px); line-height: 1.02; letter-spacing: -.032em; color: var(--accent); text-wrap: balance; }
+  .h2 { text-shadow: 0 2px 20px rgba(18, 3, 7, .5); margin: 0; max-width: 18ch; font-family: var(--serif); font-stretch: 104%; font-weight: 650; font-size: clamp(36px, 4.6vw, 64px); line-height: 1.02; letter-spacing: -.032em; color: var(--gold); text-wrap: balance; }
 
   /* nav */
   .nav { position: sticky; top: 0; z-index: 50; display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 20px 40px; border-bottom: 1px solid transparent; transition: background .5s var(--ease), border-color .5s, padding .5s var(--ease); }
@@ -83,11 +84,11 @@
   /* hero */
   .hero { position: relative; display: flex; align-items: center; min-height: clamp(620px, calc(100svh - 86px), 980px); padding: 24px 0 92px; overflow: hidden; }
   .hero-grid { position: relative; z-index: 2; display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 40px; align-items: center; width: 100%; }
-  .hero-copy { position: relative; z-index: 3; transform: perspective(1000px) rotateY(calc(var(--px, 0) * 6deg)) rotateX(calc(var(--py, 0) * -3.5deg)); transform-origin: 30% 50%; will-change: transform; }
-  .hero-title .mask { transform: translate3d(calc(var(--px, 0) * var(--tx, 0px)), calc(var(--py, 0) * var(--ty, 0px)), 0); will-change: transform; }
-  .hero-title .mask:nth-child(1) { --tx: -10px; --ty: -4px; }
-  .hero-title .mask:nth-child(2) { --tx: -18px; --ty: -2px; }
-  .hero-title .mask:nth-child(3) { --tx: -26px; --ty: 3px; }
+  .hero-copy { position: relative; z-index: 3; }
+  .hero-title .mask { transform: translate(round(nearest, calc(var(--px, 0) * var(--tx, 0px)), 1px), round(nearest, calc(var(--py, 0) * var(--ty, 0px)), 1px)); }   /* whole pixels keep the type sharp */
+  .hero-title .mask:nth-child(1) { --tx: -12px; --ty: -5px; }
+  .hero-title .mask:nth-child(2) { --tx: -22px; --ty: -2px; }
+  .hero-title .mask:nth-child(3) { --tx: -32px; --ty: 4px; }
   .hero-char { position: relative; height: clamp(440px, calc(100svh - 240px), 720px); perspective: 1100px; }
   .stage3d { position: absolute; inset: 0; transform-style: preserve-3d; transform: rotateY(calc(var(--px, 0) * 8deg)) rotateX(calc(var(--py, 0) * -4.5deg)); will-change: transform; }
   .char3d { position: absolute; inset: 0; transform: translateZ(85px); }
@@ -104,9 +105,9 @@
   .scroll-cue svg { color: var(--accent); animation: cueBob 2.2s var(--ease) infinite; }
   @keyframes cueBob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(6px); } }
 
-  .hero-title { margin: 0 0 26px; font-family: var(--serif); font-weight: 400; font-size: clamp(40px, 4.5vw, 68px); line-height: 1; letter-spacing: -.02em; color: var(--accent); }
-  .hero-title em { font-style: normal; color: var(--accent); }
-  .hero-title, .hero-sub { filter: drop-shadow(0 2px 14px rgba(18, 3, 7, .6)); }
+  .hero-title { margin: 0 0 26px; font-family: var(--serif); font-weight: 400; font-size: clamp(40px, 4.5vw, 68px); line-height: 1; letter-spacing: -.02em; color: var(--gold); }
+  .hero-title em { font-style: normal; color: var(--gold); }
+  .hero-title, .hero-sub { text-shadow: 0 2px 18px rgba(18, 3, 7, .6); }
   .hero-sub { margin: 0 0 32px; max-width: 44ch; font-size: clamp(17px, 1.5vw, 19px); line-height: 1.62; color: var(--ink-2); }
   .hero-cta { display: flex; gap: 12px; flex-wrap: wrap; }
   @keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
@@ -123,7 +124,7 @@
   [data-js] .rule.in::after { transform: scaleX(1); }
   .progress-bar { position: fixed; top: 0; left: 0; height: 2px; width: 100%; transform: scaleX(0); transform-origin: left; background: var(--accent); z-index: 60; will-change: transform; }
   .btn { position: relative; overflow: hidden; }
-  .btn-line::before { content: ""; position: absolute; inset: 0; background: var(--accent); transform: translateY(101%); transition: transform .5s var(--ease); z-index: -1; }
+  .btn-line::before { content: ""; position: absolute; inset: 0; background: var(--gold); transform: translateY(101%); transition: transform .5s var(--ease); z-index: -1; }
   .btn-line:hover::before { transform: none; }
   .btn-line:hover { color: #2b0a10; border-color: var(--accent); }
   .card-loop { transition: transform 1.2s var(--ease); }
@@ -195,7 +196,7 @@
   .seg-btn:hover { color: var(--ink); }
   .seg-btn[aria-selected="true"] { background: var(--gold-fill); color: #2b0a10; }
   .aud-panel { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 56px; align-items: start; animation: panelIn .55s var(--ease) both; }
-  .aud-title { margin: 0 0 16px; max-width: 16ch; font-family: var(--serif); font-stretch: 102%; font-weight: 600; font-size: clamp(30px, 3.6vw, 50px); line-height: 1.04; letter-spacing: -.028em; color: var(--accent); text-wrap: balance; }
+  .aud-title { margin: 0 0 16px; max-width: 16ch; font-family: var(--serif); font-stretch: 102%; font-weight: 600; font-size: clamp(30px, 3.6vw, 50px); line-height: 1.04; letter-spacing: -.028em; color: var(--gold); text-wrap: balance; }
   .aud-lead { margin: 0 0 30px; max-width: 40ch; font-size: clamp(17px, 1.5vw, 19px); line-height: 1.6; color: var(--ink-2); }
   .aud-label { margin: 0 0 10px; font-size: 12.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3); }
   .aud-problem { margin: 0 0 30px; max-width: 46ch; font-size: 17px; line-height: 1.6; color: var(--ink); }
@@ -220,14 +221,14 @@
   /* toolkit */
   .tools { margin-top: 40px; padding-top: 28px; border-top: 1px solid var(--line); }
   .tools-head { display: flex; align-items: baseline; justify-content: space-between; gap: 20px; flex-wrap: wrap; margin-bottom: 22px; }
-  .tools-head h3 { margin: 0; font-family: var(--serif); font-weight: 650; font-size: 22px; letter-spacing: -.02em; color: var(--accent); }
+  .tools-head h3 { margin: 0; font-family: var(--serif); font-weight: 650; font-size: 22px; letter-spacing: -.02em; color: var(--gold); }
   .tools-head p { margin: 0; max-width: 42ch; font-size: 15px; line-height: 1.55; color: var(--ink-2); }
   .tool-list { display: flex; flex-wrap: wrap; gap: 10px; list-style: none; margin: 0; padding: 0; }
   .tool-list li { padding: 9px 16px; border: 1px solid var(--line); border-radius: 999px; font-size: 14.5px; color: var(--ink-2); transition: border-color .3s, color .3s, background .3s; }
   .tool-list li:hover { color: var(--ink); border-color: var(--accent); background: rgba(239, 198, 111, .06); }
 
   .stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; margin: 32px 0 28px; }
-  .stat strong { display: block; font-family: var(--serif); font-weight: 700; font-size: clamp(32px, 3.4vw, 44px); letter-spacing: -.03em; line-height: 1; color: var(--accent); }
+  .stat strong { display: block; font-family: var(--serif); font-weight: 700; font-size: clamp(32px, 3.4vw, 44px); letter-spacing: -.03em; line-height: 1; color: var(--gold); }
   .stat span { display: block; margin-top: 8px; font-size: 14px; line-height: 1.45; color: var(--ink-2); }
 
   /* work */
@@ -292,7 +293,7 @@
   .scrim { position: fixed; inset: 0; z-index: 80; width: 100%; height: 100%; padding: 0; border: 0; cursor: pointer; background: rgba(12, 2, 5, .68); animation: fadein .35s var(--ease) both; }
   .modal { position: fixed; z-index: 90; left: 50%; top: 50%; width: min(640px, calc(100vw - 32px)); max-height: min(740px, calc(100vh - 40px)); overflow: auto; padding: 34px; border-radius: 8px; background: var(--sand); border: 1px solid var(--line); box-shadow: 0 40px 110px -30px rgba(0, 0, 0, .7); transform: translate(-50%, -50%); animation: modalIn .45s var(--ease) both; outline: none; }
   .modal-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; margin-bottom: 6px; }
-  .modal-title { margin: 0; color: var(--accent); font-family: var(--serif); font-weight: 650; font-size: 30px; letter-spacing: -.03em; }
+  .modal-title { margin: 0; color: var(--gold); font-family: var(--serif); font-weight: 650; font-size: 30px; letter-spacing: -.03em; }
   .modal-sub { margin: 0 0 26px; font-size: 15px; line-height: 1.55; color: var(--ink-2); }
   .close { flex: none; width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--line); background: transparent; color: var(--ink); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: border-color .3s; }
   .close:hover { border-color: var(--accent); }
@@ -404,8 +405,8 @@
     <section id="home" class="hero">
       <div class="wrap hero-grid">
         <div class="hero-copy">
-          <h1 class="hero-title reveal"><span class="mask"><span>CGI commercials,</span></span><span class="mask"><span><em>made with AI</em>,</span></span><span class="mask"><span>built on one idea.</span></span></h1>
-          <p class="hero-sub reveal">Brands, products and the experts behind them, turned into short cinematic films, produced end to end.</p>
+          <h1 class="hero-title reveal"><span class="mask"><span>Films that make</span></span><span class="mask"><span><em>your work</em></span></span><span class="mask"><span>worth watching.</span></span></h1>
+          <p class="hero-sub reveal">CGI commercials made with AI for brands, clinics and the experts behind them, produced end to end.</p>
           <div class="hero-cta reveal">
             <button class="btn btn-solid" type="button" data-book>Book a project</button>
           </div>
