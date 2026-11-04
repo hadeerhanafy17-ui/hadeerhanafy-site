@@ -156,17 +156,117 @@
     return { frame: frame, resize: resize, extra: extra };
   }
 
+  /* ---------- liquid gold: a raymarched metaball body, lit like polished metal, that follows the cursor ---------- */
+  function compile(gl, type, src) { var s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); return gl.getShaderParameter(s, gl.COMPILE_STATUS) ? s : null; }
+  var LVS = 'attribute vec2 a; void main() { gl_Position = vec4(a, 0.0, 1.0); }';
+  var LFS = [
+    '#ifdef GL_FRAGMENT_PRECISION_HIGH', 'precision highp float;', '#else', 'precision mediump float;', '#endif',
+    'uniform vec2 u_res; uniform float u_t; uniform vec2 u_m; uniform float u_fade;',
+    'float smin(float a, float b, float k) { float h = clamp(0.5 + 0.5 * (b - a) / k, 0.0, 1.0); return mix(b, a, h) - k * h * (1.0 - h); }',
+    'float map(vec3 p) {',
+    '  float t = u_t;',
+    '  float d = length(p - vec3(0.36 * sin(t * 0.55), 0.50 * cos(t * 0.43), 0.25 * sin(t * 0.31))) - 0.62;',
+    '  d = smin(d, length(p - vec3(-0.40 * cos(t * 0.37 + 1.0), 0.58 * sin(t * 0.49 + 2.0), 0.30 * cos(t * 0.27))) - 0.52, 0.55);',
+    '  d = smin(d, length(p - vec3(0.24 * sin(t * 0.61 + 3.0), -0.66 * cos(t * 0.33 + 0.5), 0.35 * sin(t * 0.41))) - 0.48, 0.55);',
+    '  d = smin(d, length(p - vec3(-0.20 * sin(t * 0.45 + 4.0), -0.30 * cos(t * 0.57 + 1.5), 0.45 * cos(t * 0.35 + 2.0))) - 0.42, 0.55);',
+    '  d = smin(d, length(p) - 0.55, 0.60);',
+    '  d = smin(d, length(p - vec3(u_m.x * 0.7, u_m.y * 0.95, 0.35)) - 0.30, 0.50);',          // the part of the liquid that follows the cursor
+    '  return d + 0.018 * sin(p.x * 6.0 + t * 1.1) * sin(p.y * 5.0 - t * 0.9) * sin(p.z * 6.0 + t * 0.7);',
+    '}',
+    'vec3 nrm(vec3 p) { vec2 e = vec2(0.002, -0.002); return normalize(e.xyy * map(p + e.xyy) + e.yyx * map(p + e.yyx) + e.yxy * map(p + e.yxy) + e.xxx * map(p + e.xxx)); }',
+    'vec3 env(vec3 r) {',
+    '  float yaw = u_t * 0.10; float cy = cos(yaw); float sy = sin(yaw);',
+    '  r = vec3(cy * r.x + sy * r.z, r.y, -sy * r.x + cy * r.z);',
+    '  float h = r.y;',
+    '  vec3 sky = mix(vec3(0.95, 0.62, 0.24), vec3(1.55, 1.30, 1.00), smoothstep(0.0, 0.9, h));',
+    '  vec3 flr = mix(vec3(0.42, 0.20, 0.07), vec3(0.06, 0.025, 0.015), smoothstep(-0.05, -0.95, h));',
+    '  vec3 c = mix(flr, sky, smoothstep(-0.25, 0.25, h));',
+    '  float az = atan(r.x, r.z); float el = asin(clamp(h, -1.0, 1.0));',
+    '  float win = smoothstep(0.0, 0.10, 0.46 - abs(az + 0.9)) * smoothstep(0.0, 0.10, 0.30 - abs(el - 0.55));',
+    '  float strip = smoothstep(0.0, 0.06, 0.10 - abs(az - 1.15)) * smoothstep(0.0, 0.10, 0.75 - abs(el - 0.05));',
+    '  return c + vec3(2.7, 2.35, 1.9) * win + vec3(1.7, 1.4, 1.05) * strip;',
+    '}',
+    'vec3 gold(vec3 p, vec3 n, vec3 rd) {',
+    '  vec3 r = reflect(rd, n);',
+    '  float ndv = clamp(dot(n, -rd), 0.0, 1.0);',
+    '  vec3 F0 = vec3(1.0, 0.72, 0.30);',
+    '  vec3 F = F0 + (vec3(1.0) - F0) * pow(1.0 - ndv, 5.0);',
+    '  float tt = 0.04; float hit2 = 0.0;',                                               // one bounce: does the reflection hit another part of the liquid?
+    '  for (int j = 0; j < 14; j++) { float d = map(p + n * 0.02 + r * tt); if (d < 0.003) { hit2 = 1.0; break; } tt += d; if (tt > 3.0) break; }',
+    '  vec3 e = env(r);',
+    '  if (hit2 > 0.5) { vec3 q = p + n * 0.02 + r * tt; e = env(reflect(r, nrm(q))) * F0 * 0.55; }',
+    '  vec3 col = 1.0 - exp(-e * F * 1.5);',
+    '  float ao = clamp(0.55 + 0.45 * map(p + n * 0.15) / 0.15, 0.35, 1.0);',
+    '  return col * mix(1.0, ao, 0.7);',
+    '}',
+    'void main() {',
+    '  vec2 uv = (gl_FragCoord.xy - 0.5 * u_res) / (0.5 * u_res.y);',
+    '  vec3 ro = vec3(0.0, 0.0, 2.9);',
+    '  vec3 rd = normalize(vec3(uv, -1.6));',
+    '  float t = 0.0; float minD = 10.0; float tmin = 0.0; bool hit = false;',
+    '  for (int i = 0; i < 44; i++) {',
+    '    float d = map(ro + rd * t);',
+    '    if (d < minD) { minD = d; tmin = t; }',
+    '    if (d < 0.0015) { hit = true; break; }',
+    '    t += d * 0.92;',
+    '    if (t > 7.0) break;',
+    '  }',
+    '  vec3 col = vec3(0.0); float a = 0.0;',
+    '  float edge = 1.0 - smoothstep(0.0, 0.006, minD);',
+    '  if (hit || edge > 0.0) { vec3 p = ro + rd * (hit ? t : tmin); col = gold(p, nrm(p), rd); a = hit ? 1.0 : edge; }',
+    '  float glow = exp(-max(minD, 0.0) * 6.0) * 0.16;',
+    '  vec3 oc = col * a + vec3(1.0, 0.70, 0.28) * glow * (1.0 - a);',
+    '  float oa = a + glow * (1.0 - a);',
+    '  vec2 q = gl_FragCoord.xy / u_res * 2.0 - 1.0;',
+    '  float vig = (1.0 - smoothstep(0.72, 1.0, abs(q.x))) * (1.0 - smoothstep(0.72, 1.0, abs(q.y)));',   // no hard canvas edge
+    '  gl_FragColor = vec4(oc, oa) * u_fade * vig;',
+    '}'
+  ].join('\n');
+
+  function makeLiquid(canvas) {
+    var gl = canvas.getContext('webgl', { alpha: true, premultipliedAlpha: true, antialias: false, depth: false, stencil: false, powerPreference: 'high-performance' });
+    if (!gl) return null;
+    var vs = compile(gl, gl.VERTEX_SHADER, LVS), fs = compile(gl, gl.FRAGMENT_SHADER, LFS);
+    if (!vs || !fs) return null;
+    var pr = gl.createProgram(); gl.attachShader(pr, vs); gl.attachShader(pr, fs); gl.linkProgram(pr);
+    if (!gl.getProgramParameter(pr, gl.LINK_STATUS)) return null;
+    gl.useProgram(pr);
+    gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(CORNERS), gl.STATIC_DRAW);
+    var loc = gl.getAttribLocation(pr, 'a'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+    var uRes = gl.getUniformLocation(pr, 'u_res'), uT = gl.getUniformLocation(pr, 'u_t'), uM = gl.getUniformLocation(pr, 'u_m'), uF = gl.getUniformLocation(pr, 'u_fade');
+    gl.enable(gl.BLEND); gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+    var scale = small ? 0.55 : 0.85, acc = 0, cnt = 0, lost = false;
+    canvas.addEventListener('webglcontextlost', function (e) { e.preventDefault(); lost = true; });
+    function resize() {
+      var k = Math.min(window.devicePixelRatio || 1, 1.5) * scale;
+      canvas.width = Math.max(2, Math.round(canvas.clientWidth * k)); canvas.height = Math.max(2, Math.round(canvas.clientHeight * k));
+    }
+    function frame(t, dt, fade) {
+      if (lost) return;
+      var r = canvas.getBoundingClientRect();
+      var cx = (ptr.x * 0.5 + 0.5) * (window.innerWidth || 1), cy = (ptr.y * 0.5 + 0.5) * (window.innerHeight || 1);
+      var mx = clamp(((cx - r.left) / Math.max(1, r.width)) * 2 - 1, -0.85, 0.85), my = clamp(-(((cy - r.top) / Math.max(1, r.height)) * 2 - 1), -0.8, 0.8);
+      gl.viewport(0, 0, canvas.width, canvas.height);
+      gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT);
+      gl.uniform2f(uRes, canvas.width, canvas.height); gl.uniform1f(uT, t); gl.uniform2f(uM, mx, my); gl.uniform1f(uF, fade);
+      gl.drawArrays(gl.TRIANGLES, 0, 6);
+      if (dt > 0 && ++cnt >= 45) {                                              // adaptive resolution: never choke a weaker GPU
+        if (acc / cnt > 0.030 && scale > 0.45) { scale *= 0.85; resize(); }
+        acc = 0; cnt = 0;
+      }
+      acc += dt;
+    }
+    resize();
+    return { frame: frame, resize: resize, canvas: canvas, on: true };
+  }
+
   /* ---------- boot ---------- */
-  var back = null, front = null;
-  var cb = $('fx-back'), cf = $('fx-front');
-  if (cb) back = makeField(cb, {
-    n: small ? 6 : 10, dMin: 5.0, dMax: 20, far: 22, speed: 0.5, rMin: 0.06, rMax: 0.15, alpha: 0.9, dpr: 1.5, still: reduce,
-    blur: function (d) { return clamp(Math.abs(d - 9) / 11, 0, 1) * 0.7; }
-  });
-  if (cf && !reduce) front = makeField(cf, {
-    n: small ? 1 : 2, dMin: 2.4, dMax: 7.5, far: 14, speed: 1.2, rMin: 0.03, rMax: 0.06, alpha: 0.6, dpr: 1.25,
-    blur: function (d) { return clamp((7.5 - d) / 5.1, 0, 1) * 0.9; }                        // bokeh as they pass the lens
-  });
+  var front = null, liquid = null;
+  var cf = $('fx-front'), cl = $('liquid'), hero = $('home');
+  if (cf && !reduce) front = makeField(cf, { n: 0, dMin: 2.4, dMax: 7.5, far: 14, speed: 1.2, rMin: 0.03, rMax: 0.06, alpha: 0.6, dpr: 1.25, blur: function () { return 0.2; } });
+  if (cl) { liquid = makeLiquid(cl); if (!liquid) cl.hidden = true; }
+  var liquidT0 = performance.now();
 
   /* ---------- opening impact: a gold sphere rushes the lens, hits the screen, bursts ---------- */
   function burst() {
@@ -185,8 +285,8 @@
     burst();
   }
   function intro() {
-    if (reduce || !front || window.scrollY > 40) return;
-    try { if (sessionStorage.getItem('hh-intro') === '1') return; sessionStorage.setItem('hh-intro', '1'); } catch (e) {}
+    if (reduce || !front || window.scrollY > 40) return false;
+    try { if (sessionStorage.getItem('hh-intro') === '1') return false; sessionStorage.setItem('hh-intro', '1'); } catch (e) {}
     var t0 = performance.now() + 450, dur = 1000;                                              // the hero copy starts revealing first
     front.extra.push({
       d: 14, px: 0, py: 0.02, pr: 0, pb: 0, pa: 0, seed: 0.37,
@@ -199,6 +299,7 @@
         return true;
       }
     });
+    return true;
   }
 
   /* ---------- hero: the screen and the character parallax in 3D ---------- */
@@ -219,8 +320,13 @@
     if (now - ptr.last > 2600) { ptr.tx = Math.sin(now / 2600) * 0.4; ptr.ty = Math.cos(now / 3300) * 0.18; }   // idle sway
     ptr.x += (ptr.tx - ptr.x) * 0.06; ptr.y += (ptr.ty - ptr.y) * 0.06;
     var warp = clamp(Math.abs(vel) / 900, 0, 2.2);                                              // scrolling pulls the spheres faster
-    if (back) back.frame(dt, warp, now / 1000);
-    if (front) front.frame(dt, warp * 0.8, now / 1000);
+    if (front) { var act = front.extra.length > 0; if (act || front.was) front.frame(dt, warp * 0.8, now / 1000); front.was = act; }
+    if (liquid) {
+      var hp = clamp(window.scrollY / Math.max(1, hero ? hero.offsetHeight : 800), 0, 1);
+      var fade = smooth(0, 1.4, (now - liquidT0) / 1000) * (1 - smooth(0.55, 0.95, hp));
+      if (fade > 0.004) { if (!liquid.on) { liquid.canvas.hidden = false; liquid.on = true; } liquid.frame(now / 1000, dt, fade); }
+      else if (liquid.on) { liquid.canvas.hidden = true; liquid.on = false; }
+    }
     updateStage();
     if (!document.hidden) raf = requestAnimationFrame(tick);
   }
@@ -229,11 +335,11 @@
   var rz = 0;
   window.addEventListener('resize', function () {
     if (rz) return;
-    rz = requestAnimationFrame(function () { rz = 0; if (back) back.resize(); if (front) front.resize(); if (reduce && back) back.frame(0, 0, 0); });
+    rz = requestAnimationFrame(function () { rz = 0; if (front) front.resize(); if (liquid) { liquid.resize(); if (reduce) liquid.frame(1.0, 0, 1); } });
   });
   document.addEventListener('visibilitychange', function () { if (!document.hidden) start(); });
 
-  if (reduce) { if (back) back.frame(0, 0, 0); } else { start(); intro(); }
+  if (reduce) { if (liquid) liquid.frame(1.0, 0, 1); } else { if (intro()) liquidT0 = performance.now() + 1350; start(); }
 
   /* ---------- cards tilt in 3D under the cursor (the CSS reads --rx --ry --gx --gy) ---------- */
   if (!reduce && window.matchMedia && window.matchMedia('(hover: hover) and (pointer: fine)').matches) {

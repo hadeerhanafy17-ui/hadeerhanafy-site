@@ -90,6 +90,7 @@
   .screen3d { position: absolute; left: 50%; top: 3%; width: 104%; height: 62%; padding: 3px; border-radius: 22px; background: var(--gold-fill); transform: translateX(-50%) translateZ(-70px); box-shadow: 0 40px 90px -30px rgba(0, 0, 0, .8), 0 0 80px -8px rgba(239, 198, 111, .38); }
   .screen3d img { display: block; width: 100%; height: 100%; object-fit: cover; border-radius: 19px; }
   .screen-gloss { position: absolute; inset: 3px; border-radius: 19px; pointer-events: none; background: linear-gradient(115deg, rgba(255, 255, 255, .24) 0%, rgba(255, 255, 255, 0) 38%); }
+  .liquid { position: absolute; left: -12%; top: -8%; width: 124%; height: 112%; transform: translateZ(30px); pointer-events: none; }
   .char3d { position: absolute; inset: 0; transform: translateZ(85px); }
   .glow { position: absolute; left: 50%; top: 48%; width: min(820px, 150%); aspect-ratio: 1; transform: translate(-50%, -50%); border-radius: 50%; background: radial-gradient(circle, rgba(239, 198, 111, .10) 0%, transparent 66%); animation: fadein 2s var(--ease) .2s both; }
   .floor-shadow { position: absolute; left: 50%; bottom: 1px; width: min(340px, 72%); height: 26px; transform: translateX(-50%); border-radius: 50%; background: radial-gradient(ellipse at center, rgba(0, 0, 0, .6), transparent 72%); }
@@ -145,7 +146,6 @@
   .float-glow { position: absolute; left: 50%; top: 46%; width: 320%; aspect-ratio: 1; transform: translate(-50%, -50%); border-radius: 50%; background: radial-gradient(circle, var(--accent), transparent 62%); opacity: .13; }
 
   /* fx: golden sphere field behind the page, a few passing in front, and the opening impact */
-  .fx-canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
   .fx-front { position: fixed; inset: 0; z-index: 45; width: 100%; height: 100%; pointer-events: none; }
   .impact { position: fixed; inset: 0; z-index: 70; pointer-events: none; opacity: 0; background: radial-gradient(circle at 50% 50%, rgba(255, 247, 224, .96) 0%, rgba(239, 198, 111, .55) 20%, rgba(169, 123, 59, .2) 46%, transparent 70%); }
   .impact.go { animation: impact .75s cubic-bezier(.2, .8, .2, 1) both; }
@@ -381,7 +381,6 @@
 
 <div id="hh-root" class="hh">
   <div class="site-bg" id="hh-bg" aria-hidden="true">
-    <canvas class="fx-canvas" id="fx-back"></canvas>
     <span class="bg-vignette"></span>
   </div>
 
@@ -425,6 +424,7 @@
               <img src="assets/w10-loop.webp" alt="" width="640" height="800" decoding="async">
               <span class="screen-gloss"></span>
             </div>
+            <canvas class="liquid" id="liquid" aria-hidden="true"></canvas>
             <div class="char3d">
               <span class="floor-shadow" aria-hidden="true"></span>
               <div class="sprite" id="hh-sprite" role="img" aria-label="Hadeer Hanafy's 3D character, following the cursor"></div>
