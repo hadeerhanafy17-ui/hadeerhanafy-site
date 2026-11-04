@@ -487,10 +487,25 @@
         if (st) st.textContent = before ? 'Before' : 'After';
         b.setAttribute('aria-pressed', before ? 'true' : 'false');
       }
+      var demoT = [], touched = false;
+      function stopDemo() { demoT.forEach(clearTimeout); demoT = []; }
+      function demo() {                                                // when the card first scrolls into view it shows the other side twice, so nobody has to guess
+        if (REDUCE || touched) return;
+        [[900, true], [2500, false], [4200, true], [5800, false]].forEach(function (s) {
+          demoT.push(setTimeout(function () { if (!touched && small()) paint(s[1]); }, s[0]));
+        });
+      }
+      function interacted() { touched = true; stopDemo(); }
+      if ('IntersectionObserver' in window) {
+        var seen = new IntersectionObserver(function (entries) {
+          entries.forEach(function (en) { if (en.isIntersecting && small()) { seen.disconnect(); demo(); } });
+        }, { threshold: 0.6 });
+        seen.observe(b);
+      }
       b.setAttribute('role', 'button'); b.tabIndex = 0;
       b.setAttribute('aria-label', 'Before and after. Touch and hold to see the before, tap to switch.');
       b.addEventListener('contextmenu', function (e) { if (small()) e.preventDefault(); });
-      b.addEventListener('pointerdown', function () { if (!small()) return; t0 = performance.now(); paint(!base); });
+      b.addEventListener('pointerdown', function () { if (!small()) return; interacted(); t0 = performance.now(); paint(!base); });
       function end(e) {
         if (!t0) return;
         var quick = performance.now() - t0 < 280;
@@ -500,7 +515,7 @@
       }
       b.addEventListener('pointerup', end); b.addEventListener('pointercancel', end); b.addEventListener('pointerleave', end);
       b.addEventListener('keydown', function (e) {
-        if (small() && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); base = !base; paint(base); }
+        if (small() && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); interacted(); base = !base; paint(base); }
       });
     });
 
