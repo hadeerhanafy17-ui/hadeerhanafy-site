@@ -1,0 +1,510 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>هدير حنفي — AI Ads Creator | إعلانات CGI بالذكاء الاصطناعي</title>
+<meta name="description" content="هدير حنفي — AI Ads Creator. إعلانات CGI بالذكاء الاصطناعي: الفكرة والشخصيات والمشاهد والصوت والمونتاج النهائي، من البداية إلى النهاية للبراندات والمنتجات والخبراء خلفها.">
+<link rel="canonical" href="https://hadeerhanafy.com/ar">
+<link rel="alternate" hreflang="en" href="https://hadeerhanafy.com/">
+<link rel="alternate" hreflang="ar" href="https://hadeerhanafy.com/ar">
+<link rel="alternate" hreflang="x-default" href="https://hadeerhanafy.com/">
+<meta name="theme-color" content="#200509">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="ar_AR">
+<meta property="og:locale:alternate" content="en_US">
+<meta property="og:url" content="https://hadeerhanafy.com/ar">
+<meta property="og:title" content="هدير حنفي — AI Ads Creator">
+<meta property="og:description" content="إعلانات CGI بالذكاء الاصطناعي، مبنية على فكرة واحدة. الفكرة والشخصيات والمشاهد والصوت والمونتاج النهائي، من البداية إلى النهاية.">
+<meta property="og:image" content="https://hadeerhanafy.com/assets/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="هدير حنفي — AI Ads Creator">
+<meta name="twitter:description" content="إعلانات CGI بالذكاء الاصطناعي، مبنية على فكرة واحدة.">
+<meta name="twitter:image" content="https://hadeerhanafy.com/assets/og.jpg">
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2032%2032'%3E%3Crect%20width='32'%20height='32'%20rx='7'%20fill='%230A0A0A'/%3E%3Cpath%20d='M11%209v14M21%209v14M11%2016h10'%20stroke='%23EFC66F'%20stroke-width='2.6'%20stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400..800&amp;display=swap">
+<link rel="preload" as="image" href="/assets/char-sprite.webp">
+<script>document.documentElement.setAttribute('data-js','1');</script>
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<a class="skip" href="#about">انتقل إلى المحتوى</a>
+
+<div id="hh-root" class="hh">
+  <div class="site-bg" id="hh-bg" aria-hidden="true">
+    <canvas class="fx-canvas" id="fx-back"></canvas>
+    <span class="bg-vignette"></span>
+  </div>
+
+  <span class="progress-bar" id="hh-progress" aria-hidden="true"></span>
+  <canvas class="fx-front" id="fx-front" aria-hidden="true"></canvas>
+
+  <div class="float" id="hh-float" aria-hidden="true">
+    <span class="float-glow"></span>
+    <div class="char-tilt" id="hh-char2">
+      <img class="char-base" src="/assets/hadeer-full.png" alt="">
+    </div>
+  </div>
+
+  <header class="nav" id="hh-nav">
+    <a class="brand" href="#home"><span>هدير حنفي</span><small>AI Ads Creator</small></a>
+    <nav class="nav-links" aria-label="الأقسام">
+      <a class="nav-link" href="#home" data-nav="home">الرئيسية</a>
+      <a class="nav-link" href="#about" data-nav="about">عني</a>
+      <a class="nav-link" href="#work" data-nav="work">الأعمال</a>
+      <a class="nav-link" href="#process" data-nav="process">الخطوات</a>
+      <a class="nav-link" href="#contact" data-nav="contact">تواصل</a>
+    </nav>
+    <div class="nav-end">
+      <a class="lang" href="/" hreflang="en" lang="en" dir="ltr">English</a>
+      <button class="btn btn-solid" type="button" data-book>احجز مشروعك</button>
+    </div>
+  </header>
+
+  <main>
+    <section id="home" class="hero">
+      <div class="wrap hero-grid">
+        <div class="hero-copy">
+          <h1 class="hero-title reveal"><span class="mask"><span>أفلام تخلّي</span></span><span class="mask"><span><em>شغلك</em></span></span><span class="mask"><span>يستاهل المشاهدة.</span></span></h1>
+          <p class="hero-sub reveal">إعلانات CGI بالذكاء الاصطناعي للبراندات والعيادات والخبراء خلفها، من الفكرة حتى الفيلم النهائي.</p>
+          <div class="hero-cta reveal">
+            <button class="btn btn-solid" type="button" data-book>احجز مشروعك</button>
+          </div>
+        </div>
+        <div class="hero-char" id="hero-char">
+          <span class="glow" aria-hidden="true"></span>
+          <div class="stage3d" id="stage3d">
+            <div class="char3d">
+              <span class="floor-shadow" aria-hidden="true"></span>
+              <div class="sprite" id="hh-sprite" role="img" aria-label="شخصية هدير حنفي ثلاثية الأبعاد، تتابع المؤشر"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <a class="scroll-cue" href="#numbers">مرّر للأسفل
+        <svg width="14" height="18" viewBox="0 0 14 18" fill="none" aria-hidden="true"><path d="M7 1v15M1.5 10.5 7 16l5.5-5.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+      </a>
+    </section>
+
+    <section id="numbers" class="numbers" aria-label="بالأرقام">
+      <div class="wrap">
+        <div class="numbers-row reveal">
+          <div class="stat"><strong>4</strong><span>دول</span></div>
+          <div class="stat"><strong>215K+</strong><span>مشاهدة على إعلان واحد</span></div>
+          <div class="stat"><strong>60+</strong><span>فيديو في سلسلة واحدة</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="story" class="ba" aria-labelledby="ba-title">
+      <div class="ba-track">
+        <div class="ba-stage">
+          <div class="wrap">
+            <div class="ba-head">
+              <div class="ch reveal"><span class="ch-num">←</span><span>قبل / بعد</span></div>
+              <h2 class="h2 reveal" id="ba-title"><span class="mask"><span>منتج واحد. فيلم كامل.</span></span></h2>
+            </div>
+            <div class="ba-board">
+              <figure class="ba-before"><img src="/assets/ba-jw-pieces.webp" alt="قطع المجوهرات الأربع وحدها: قلادة ياقوت، قلادة زمرد، سلسلة ألماس، وعقد ياقوت" width="640" height="800" loading="lazy" decoding="async"></figure>
+              <p class="ba-lab ba-lab-before">قبل</p>
+              <p class="ba-lab ba-lab-after l">بعد</p>
+              <p class="ba-lab ba-lab-after r" aria-hidden="true">بعد</p>
+              <div class="ba-after">
+              <figure class="ba-shot s1"><img src="/assets/ba-jw-1.webp" alt="لبؤة ترتدي قلادة الياقوت" width="400" height="500" loading="lazy" decoding="async"></figure>
+              <figure class="ba-shot s2"><img src="/assets/ba-jw-2.webp" alt="فهد أسود يرتدي قلادة الزمرد" width="400" height="500" loading="lazy" decoding="async"></figure>
+              <figure class="ba-shot s3"><img src="/assets/ba-jw-3.webp" alt="نمر يرتدي سلسلة الألماس" width="400" height="500" loading="lazy" decoding="async"></figure>
+              <figure class="ba-shot s4"><img src="/assets/ba-jw-4.webp" alt="ذئب أبيض يرتدي عقد الياقوت" width="400" height="500" loading="lazy" decoding="async"></figure>
+              </div>
+              <span class="ba-state" aria-hidden="true">بعد</span>
+            </div>
+            <p class="ba-hint">اضغط مع الاستمرار لمشاهدة «قبل»، وضغطة خفيفة للتبديل.</p>
+            <div class="ba-foot">
+              <p class="ba-cap"><strong>لكل قطعة حيوانها.</strong> لقطات من فيلم واحد، فكرة ذاتية مستوحاة من L’azurde.</p>
+              <button class="btn btn-line ba-watch" type="button" data-film="/assets/w10.mp4">شاهد الفيلم</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="ba" aria-labelledby="ba-title-2">
+      <div class="ba-track">
+        <div class="ba-stage">
+          <div class="wrap">
+            <div class="ba-head">
+              <div class="ch reveal"><span class="ch-num">←</span><span>قبل / بعد</span></div>
+              <h2 class="h2 reveal" id="ba-title-2"><span class="mask"><span>منتج آخر، فيلم آخر.</span></span></h2>
+            </div>
+            <div class="ba-board">
+              <figure class="ba-before"><img src="/assets/ba-before.webp" alt="نقطة البداية: كيس تسوق عادي على خلفية زرقاء فاتحة" width="640" height="800" loading="lazy" decoding="async"></figure>
+              <p class="ba-lab ba-lab-before">قبل</p>
+              <p class="ba-lab ba-lab-after l">بعد</p>
+              <p class="ba-lab ba-lab-after r" aria-hidden="true">بعد</p>
+              <div class="ba-after">
+              <figure class="ba-shot s1"><img src="/assets/ba-1.webp" alt="صورة نتيجة ترتفع من كيس التسوق" width="400" height="500" loading="lazy" decoding="async"></figure>
+              <figure class="ba-shot s2"><img src="/assets/ba-2.webp" alt="صورتا نتيجة مصفوفتان فوق الكيس" width="400" height="500" loading="lazy" decoding="async"></figure>
+              <figure class="ba-shot s3"><img src="/assets/ba-3.webp" alt="صورة نتيجة ثالثة تخرج من الكيس" width="400" height="500" loading="lazy" decoding="async"></figure>
+              <figure class="ba-shot s4"><img src="/assets/ba-4.webp" alt="الصور الثلاث مرتبة فوق الكيس" width="400" height="500" loading="lazy" decoding="async"></figure>
+              </div>
+              <span class="ba-state" aria-hidden="true">بعد</span>
+            </div>
+            <p class="ba-hint">اضغط مع الاستمرار لمشاهدة «قبل»، وضغطة خفيفة للتبديل.</p>
+            <div class="ba-foot">
+              <p class="ba-cap"><strong>النتائج تخرج من الكيس.</strong> لقطات من فيلم واحد، صُنع لعيادة جلدية وتجميل في السعودية.</p>
+              <button class="btn btn-line ba-watch" type="button" data-film="/assets/w8.mp4">شاهد الفيلم</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="audience" class="chap">
+      <div class="wrap">
+        <div class="ch reveal"><span class="ch-num">←</span><span>الجمهور</span></div>
+        <h2 class="h2 reveal"><span class="mask"><span>لمن هذا العمل؟</span></span></h2>
+
+        <div class="seg reveal" role="tablist" aria-label="لمن هذا العمل؟">
+          <button class="seg-btn" type="button" role="tab" id="aud-tab-clinics" aria-controls="aud-panel-clinics" aria-selected="true">العيادات والأطباء</button>
+          <button class="seg-btn" type="button" role="tab" id="aud-tab-brands" aria-controls="aud-panel-brands" aria-selected="false" tabindex="-1">البراندات والمنتجات</button>
+          <button class="seg-btn" type="button" role="tab" id="aud-tab-creators" aria-controls="aud-panel-creators" aria-selected="false" tabindex="-1">صنّاع المحتوى والخبراء</button>
+        </div>
+
+        <div class="aud-panel" role="tabpanel" id="aud-panel-clinics" aria-labelledby="aud-tab-clinics">
+          <div class="aud-copy">
+            <h3 class="aud-title">أقوى إعلان للطبيب هو الطبيب نفسه.</h3>
+            <p class="aud-lead">أحوّل خبرتك إلى سلسلة فيديوهات لا تُنسى.</p>
+            <p class="aud-label">المشكلة</p>
+            <p class="aud-problem">نتائجك وخبرتك يصعب عرضها في منشور واحد.</p>
+            <p class="aud-label">ماذا سأفعل لك</p>
+            <ul class="aud-list">
+              <li>أحوّل علاجاتك وخبرتك إلى سلسلة أفلام قصيرة.</li>
+              <li>أكتبها وأسجّل صوتها بلهجتك: مصرية أو خليجية أو شامية، أو بالإنجليزية.</li>
+              <li>أُبقي كل شخصية ومنتج ولوجو ثابتًا من أول فيلم إلى آخر فيلم.</li>
+            </ul>
+          </div>
+          <div class="aud-example" data-film="/assets/w1.mp4"></div>
+        </div>
+
+        <div class="aud-panel" role="tabpanel" id="aud-panel-brands" aria-labelledby="aud-tab-brands" hidden>
+          <div class="aud-copy">
+            <h3 class="aud-title">منتجك لا يحتاج يوم تصوير.</h3>
+            <p class="aud-lead">يحتاج فكرة. وأنا أبني الفيلم كله حولها.</p>
+            <p class="aud-label">المشكلة</p>
+            <p class="aud-problem">المنتج يحتاج سببًا ليُشاهَد، لا مجرد لقطة نظيفة.</p>
+            <p class="aud-label">ماذا سأفعل لك</p>
+            <ul class="aud-list">
+              <li>أجد اللحظة الواحدة التي توقف التمرير في أول ثانية أو ثانيتين.</li>
+              <li>أبني الفيلم حول عبوتك ولوجو علامتك.</li>
+              <li>أسلّمه جاهزًا للنشر، بالصوت والمونتاج والكابشن.</li>
+            </ul>
+          </div>
+          <div class="aud-example" data-film="/assets/w3.mp4"></div>
+        </div>
+
+        <div class="aud-panel" role="tabpanel" id="aud-panel-creators" aria-labelledby="aud-tab-creators" hidden>
+          <div class="aud-copy">
+            <h3 class="aud-title">قصتك، مصنوعة لتُشاهَد وتُحفَظ.</h3>
+            <p class="aud-lead">أحوّل ما تعرفه إلى فيلم قصير بصوتك أنت.</p>
+            <p class="aud-label">المشكلة</p>
+            <p class="aud-problem">أنت تعرف الموضوع جيدًا. الصعب أن يبدو ويُسمَع كأنه أنت.</p>
+            <p class="aud-label">ماذا سأفعل لك</p>
+            <ul class="aud-list">
+              <li>أكتبه وأسجّله باللهجة التي يتكلمها جمهورك فعلًا.</li>
+              <li>أعيد بناء الترند حول هويتك بدل تقليده.</li>
+              <li>أُبقي شكلك وصوتك ثابتين عبر سلسلة كاملة.</li>
+            </ul>
+          </div>
+          <div class="aud-example" data-film="/assets/w11.mp4"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="about" class="chap">
+      <div class="wrap about-grid">
+        <div class="portrait par">
+          <img class="portrait-char" src="/assets/about-look.png" alt="شخصية هدير حنفي ثلاثية الأبعاد" width="520" height="650">
+        </div>
+        <div>
+          <div class="ch reveal"><span class="ch-num">02</span><span>عني</span></div>
+          <span class="rule reveal"></span>
+          <h2 class="h2 reveal"><span class="mask"><span>كل منتج يمكن أن يكون بطل قصة.</span></span></h2>
+          <p class="lead reveal">أصنع إعلانات CGI بالذكاء الاصطناعي، لا 3D جاهز ولا قوالب. كل فيلم مصمَّم حول البراند الذي يخصّه.</p>
+          <p class="body reveal">الفكرة تقود والأدوات تتبعها. آخذ منتجًا أو خدمة أو شخصًا وأحوّله إلى فكرة بصرية وقصة قصيرة: هوك، سكربت، شخصيات، مراجع، توليد المشاهد، مراجعة الهوية والحركة، صوت، مونتاج وكابشن.</p>
+          <dl class="facts reveal">
+            <div class="fact"><dt>من رابط منتج واحد</dt><dd>باقة محتوى كاملة، مكتوبة ومولَّدة ومونتجة — حتى 20 فيلمًا</dd></div>
+            <div class="fact"><dt>من صورة واحدة</dt><dd>ستوري بورد، شخصيات، تحكم في الحركة، وأي فورمات ترند</dd></div>
+            <div class="fact"><dt>الصوت</dt><dd>عربي بلهجات مصرية وخليجية وشامية، وإنجليزي، ببصمة صوت واحدة ثابتة</dd></div>
+            <div class="fact"><dt>تثبيت الهوية</dt><dd>نفس الوجه والمنتج واللوجو ثابتين عبر سلسلة كاملة</dd></div>
+            <div class="fact"><dt>دائمًا في الصدارة</dt><dd>نظام يرصد كل أداة وموديل وترند جديد يوم صدوره</dd></div>
+            <div class="fact"><dt>التعامل مع العملاء</dt><dd>ثلاث سنوات في المبيعات وخدمة العملاء بشركة اتصالات: قراءة البريف، وإدارة التوقعات، والمتابعة حتى النهاية</dd></div>
+            <div class="fact"><dt>المواقع</dt><dd>مواقع 3D متحركة، تصميمًا وتنفيذًا من الألف إلى الياء. وهذا الموقع من تنفيذي.</dd></div>
+          </dl>
+
+          <div class="stats reveal">
+            <div class="stat"><strong>60+</strong><span>فيلمًا سُلّمت لمجموعة عيادات واحدة، والعدد في ازدياد</span></div>
+            <div class="stat"><strong>215K+</strong><span>مشاهدة على فيلم واحد بلا حوار</span></div>
+            <div class="stat"><strong>4</strong><span>دول: مصر، السعودية، الأردن، الإمارات</span></div>
+          </div>
+
+          <p class="body reveal">تصدر أدوات جديدة كل أسبوع في هذا المجال. أتابعها فور صدورها وأحوّلها إلى أشياء يستطيع البراند شراءها فعلًا: سلسلة أطول من رابط واحد، وشخصية تحافظ على وجهها عبر عشرين مشهدًا، وترند يُعاد بناؤه حول البراند في يوم. وهذا الموقع واحد منها: الشخصية ثلاثية الأبعاد والحركة والأفلام كلها من صنعي.</p>
+
+          <div class="tools reveal">
+            <div class="tools-head">
+              <h3>الأدوات</h3>
+              <p>الفكرة تقود والأدوات تتبعها. كل لقطة تذهب إلى المحرك الذي يصنعها بأفضل شكل.</p>
+            </div>
+            <ul class="tool-list" dir="ltr">
+              <li>Higgsfield</li><li>Claude</li><li>ChatGPT</li><li>Flow</li><li>OmniFlash</li><li>Grok</li>
+              <li>Kling</li><li>Seedance</li><li>Veo 3</li><li>Runway</li><li>Midjourney</li>
+              <li>Nano Banana</li><li>Freepik</li><li>ElevenLabs</li><li>HeyGen</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="work" class="chap sand">
+      <div class="wrap">
+        <div class="work-head">
+          <div>
+            <div class="ch reveal"><span class="ch-num">03</span><span>الأعمال</span></div>
+            <h2 class="h2 reveal"><span class="mask"><span>أعمال مختارة.</span></span></h2>
+          </div>
+          <div class="chips" id="hh-filters" role="group" aria-label="تصفية الأعمال"></div>
+        </div>
+        <div class="grid" id="hh-grid"></div>
+      </div>
+    </section>
+
+    <section id="process" class="chap">
+      <div class="wrap">
+        <div class="ch reveal"><span class="ch-num">04</span><span>الخطوات</span></div>
+        <h2 class="h2 reveal"><span class="mask"><span>أربع خطوات. وأنت توافق على كل واحدة.</span></span></h2>
+        <ol class="proc">
+          <li class="proc-step tilt reveal">
+            <span class="proc-n">1</span>
+            <h3>أخبرني بالفكرة والمنتج</h3>
+            <p>العميل، والمنتج، واللحظة الواحدة التي يجب أن توقف التمرير.</p>
+          </li>
+          <li class="proc-step gate tilt reveal">
+            <span class="proc-pill">موافقتك</span>
+            <span class="proc-n">2</span>
+            <h3>أرسل لك الاتجاه</h3>
+            <p>الفكرة والهوك والشكل البصري. لا شيء يتحرك قبل أن توافق.</p>
+            <p class="proc-get"><strong>تحصل على:</strong> اتجاهات الفكرة وهوك الافتتاح</p>
+          </li>
+          <li class="proc-step tilt reveal">
+            <span class="proc-n">3</span>
+            <h3>أبني المشاهد</h3>
+            <p>سكربت، شخصيات، توليد، صوت ولهجة، ومراجعة حتى تثبت الوجوه والمنتجات واللوجو.</p>
+            <p class="proc-get"><strong>تحصل على:</strong> السكربت والشخصيات والمشاهد المقفولة</p>
+          </li>
+          <li class="proc-step tilt reveal">
+            <span class="proc-n">4</span>
+            <h3>المونتاج والتسليم وجولة تعديلات</h3>
+            <p>مونتاج وصوت وكابشن، ثم جولة تعديلات على ملاحظاتك حتى يصبح جاهزًا للنشر.</p>
+            <p class="proc-get"><strong>تحصل على:</strong> الفيلم النهائي والكابشن</p>
+          </li>
+        </ol>
+        <p class="proc-note reveal">كل خطوة تُعتمد قبل التي تليها.</p>
+      </div>
+    </section>
+
+    <section id="difference" class="chap sand">
+      <div class="wrap">
+        <div class="ch reveal"><span class="ch-num">←</span><span>الفرق</span></div>
+        <h2 class="h2 reveal"><span class="mask"><span>ليس مجرد ضغطة زر.</span></span></h2>
+        <p class="body reveal">الأداة تصنع اللقطات، والتوجيه حولها يصنع الفيلم.</p>
+        <div class="vs">
+          <article class="vs-card tilt reveal">
+            <h3>أداة ذكاء اصطناعي وحدها</h3>
+            <ul>
+              <li>لقطات جميلة لكنها منفصلة</li>
+              <li>الوجه والمنتج يتغيران بين المشاهد</li>
+              <li>لا قصة تربط بينها</li>
+            </ul>
+          </article>
+          <article class="vs-card vs-me tilt reveal">
+            <h3>أنا مع الأداة</h3>
+            <ul>
+              <li>فكرة وهوك</li>
+              <li>شخصية تبقى كما هي</li>
+              <li>اللهجة المناسبة</li>
+              <li>مونتاج وإيقاع</li>
+              <li>تعديلات على ملاحظاتك</li>
+            </ul>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="packages" class="chap">
+      <div class="wrap">
+        <div class="ch reveal"><span class="ch-num">←</span><span>طرق العمل</span></div>
+        <h2 class="h2 reveal"><span class="mask"><span>ثلاث طرق للعمل معًا.</span></span></h2>
+        <div class="pack">
+          <article class="pack-card tilt reveal">
+            <h3>فيلم واحد</h3>
+            <p>فكرة واحدة تتحول إلى فيلم كامل.</p>
+            <ul>
+              <li>فكرة وهوك وسكربت</li>
+              <li>صوت بلهجتك ومونتاج وكابشن</li>
+              <li>جولة تعديلات على ملاحظاتك</li>
+            </ul>
+          </article>
+          <article class="pack-card tilt reveal">
+            <h3>حملة</h3>
+            <p>مجموعة أفلام حول منتج أو قصة واحدة.</p>
+            <ul>
+              <li>نفس الشخصيات ونفس الشكل في كل فيلم</li>
+              <li>من رابط منتج واحد، حتى 20 فيلمًا</li>
+              <li>الهوكس والفورمات تُخطَّط معًا</li>
+            </ul>
+          </article>
+          <article class="pack-card tilt reveal">
+            <h3>اشتراك شهري</h3>
+            <p>تدفق ثابت من الأفلام لبراند واحد.</p>
+            <ul>
+              <li>شخصية واحدة وشكل واحد وصوت واحد، شهرًا بعد شهر</li>
+              <li>أدوات وترندات جديدة تتحول إلى فورمات لبراندك</li>
+              <li>60+ فيلمًا سُلّمت لمجموعة عيادات واحدة</li>
+            </ul>
+          </article>
+        </div>
+        <div class="pack-note reveal">
+          <p>يُسعَّر كل مشروع بالدولار الأمريكي، بعد أن تخبرني بما تحتاجه.</p>
+          <button class="btn btn-solid" type="button" data-book>احجز مشروعك</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="faq" class="chap sand">
+      <div class="wrap">
+        <div class="ch reveal"><span class="ch-num">←</span><span>أسئلة</span></div>
+        <h2 class="h2 reveal"><span class="mask"><span>قبل أن تحجز.</span></span></h2>
+        <div class="faq reveal">
+          <details>
+            <summary>ماذا أحتاج أن أرسل؟</summary>
+            <p>رابط المنتج أو صورة واحدة تكفي للبدء، مع سطر عن الجمهور المستهدف. وأسأل عن الباقي في الخطوة الأولى.</p>
+          </details>
+          <details>
+            <summary>ما اللغات واللهجات المتاحة؟</summary>
+            <p>العربية بلهجات مصرية وخليجية وشامية، والإنجليزية، مع صوت واحد ثابت على السلسلة كلها.</p>
+          </details>
+          <details>
+            <summary>هل يظهر وجه حقيقي أم شخصية؟</summary>
+            <p>يمكن تصميم الشخصيات من صورة واحدة، ويُثبَّت الوجه أو المنتج أو اللوجو ليبقى كما هو عبر السلسلة كلها.</p>
+          </details>
+          <details>
+            <summary>كم جولة تعديلات تشمل؟</summary>
+            <p>تأتي جولة تعديلات على ملاحظاتك مع المونتاج النهائي.</p>
+          </details>
+          <details>
+            <summary>كم تستغرق المدة؟</summary>
+            <p>تعتمد على طول الفيلم وعدد الأفلام. اكتب موعدك في نموذج الحجز وأخبرك بما يناسبه.</p>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <section id="contact" class="contact">
+      <div class="wrap">
+        <div class="ch reveal"><span class="ch-num">05</span><span>تواصل</span></div>
+        <h2 class="h2 reveal contact-title"><span class="mask"><span>هل فكرتك جاهزة لتتحول إلى فيلم؟</span></span></h2>
+        <div class="contact-row reveal">
+          <button class="btn btn-solid" type="button" data-book>احجز مشروعك</button>
+        </div>
+        <p class="contact-alt">أو راسلني مباشرة: <a href="https://instagram.com/hadeerhanafy17" target="_blank" rel="noopener">Instagram</a><span>·</span><a href="mailto:hadeerhanafy17@gmail.com">البريد الإلكتروني</a><span>·</span><a href="https://wa.me/201279307336" target="_blank" rel="noopener">واتساب</a></p>
+        <footer class="footer">
+          <span>© 2026 هدير حنفي</span>
+          <span>هدير حنفي | AI Ads Creator</span>
+        </footer>
+      </div>
+    </section>
+  </main>
+
+  <!-- lightbox -->
+  <div class="lightbox" id="hh-lightbox" role="dialog" aria-modal="true" aria-label="مشغّل الأفلام" tabindex="-1" hidden>
+    <button class="lightbox-close" type="button" aria-label="إغلاق" id="hh-lb-close">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 3l10 10M13 3L3 13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path></svg>
+    </button>
+    <video id="hh-player" controls playsinline preload="metadata"></video>
+    <p class="lightbox-cap" id="hh-lb-cap"></p>
+  </div>
+
+  <!-- booking modal -->
+  <button class="scrim" type="button" aria-label="إغلاق نموذج الحجز" id="hh-scrim" hidden></button>
+  <div id="hh-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="hh-modal-title" tabindex="-1" hidden>
+    <div class="modal-head">
+      <h2 id="hh-modal-title" class="modal-title">احجز مشروعك</h2>
+      <button class="close" type="button" aria-label="إغلاق" data-close-modal>
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 3l10 10M13 3L3 13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path></svg>
+      </button>
+    </div>
+
+    <div id="hh-step-form">
+      <p class="modal-sub">أخبرني عن البراند والفكرة، وسأرد عليك باتجاه للفكرة.</p>
+      <div class="form">
+        <div class="row2">
+          <div class="field">
+            <label for="bk-name">اسمك</label>
+            <input id="bk-name" class="input" type="text" autocomplete="name" dir="auto">
+          </div>
+          <div class="field">
+            <label for="bk-contact">البريد الإلكتروني</label>
+            <input id="bk-contact" class="input" type="email" autocomplete="email" dir="auto">
+          </div>
+        </div>
+        <div class="field">
+          <label for="bk-phone">واتساب أو تيليجرام <span class="opt">اختياري</span></label>
+          <input id="bk-phone" class="input" type="text" inputmode="tel" autocomplete="tel" dir="auto">
+        </div>
+        <div class="field">
+          <label for="bk-brand">البراند أو المنتج</label>
+          <input id="bk-brand" class="input" type="text" dir="auto">
+        </div>
+        <fieldset class="field">
+          <legend>ماذا تحتاج؟</legend>
+          <div class="chips" id="hh-services"></div>
+        </fieldset>
+        <div class="field">
+          <label for="bk-budget">الميزانية بالدولار $</label>
+          <input id="bk-budget" class="input" type="text" inputmode="decimal" dir="auto">
+        </div>
+        <div class="field">
+          <label for="bk-idea">الفكرة والمنتج والموعد</label>
+          <textarea id="bk-idea" class="input" dir="auto"></textarea>
+        </div>
+        <p class="error" id="hh-error" role="alert" hidden></p>
+        <div class="modal-actions">
+          <button class="btn btn-solid" type="button" id="hh-review">راجع الطلب</button>
+          <button class="btn btn-line" type="button" data-close-modal>إلغاء</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="hh-step-sent" hidden>
+      <p class="modal-sub">طلبك جاهز. أرسله على Instagram ليصلني مباشرة.</p>
+      <pre class="summary" id="hh-summary"></pre>
+      <div class="modal-actions">
+        <a class="btn btn-solid" href="https://ig.me/m/hadeerhanafy17" target="_blank" rel="noopener">أرسل على Instagram</a>
+        <button class="btn btn-line" type="button" id="hh-copy">انسخ الطلب</button>
+        <button class="btn btn-line" type="button" id="hh-edit">تعديل</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Person","name":"هدير حنفي","alternateName":"Hadeer Hanafy","jobTitle":"AI Ads Creator","url":"https://hadeerhanafy.com/ar","email":"mailto:hadeerhanafy17@gmail.com","image":"https://hadeerhanafy.com/assets/og.jpg","sameAs":["https://instagram.com/hadeerhanafy17"],"description":"AI Ads Creator: إعلانات CGI بالذكاء الاصطناعي — الفكرة والشخصيات والمشاهد والصوت والمونتاج النهائي، من البداية إلى النهاية.","knowsAbout":["AI CGI","إعلانات البراند","السرد البصري","التوجيه الإبداعي"],"worksFor":{"@type":"Organization","name":"Independent"}}
+</script>
+
+<script src="/i18n-ar.js" defer></script>
+<script src="/app.js" defer></script>
+<script src="/fx.js" defer></script>
+</body>
+</html>

@@ -1,65 +1,80 @@
 (function () {
   'use strict';
 
-  var CATS = { cgi: 'AI CGI', brand: 'Brand Commercials', trend: 'Trend-Led', expert: 'Expert Branding' };
+  // Arabic page: /i18n-ar.js (loaded first) provides window.HH_AR with the UI strings and the film texts
+  var X = window.HH_AR || null;
+  var RTL = document.documentElement.dir === 'rtl';
+  var UI = {
+    cats: { cgi: 'AI CGI', brand: 'Brand Commercials', trend: 'Trend-Led', expert: 'Expert Branding' },
+    all: 'All work', watch: 'Watch the film', play: 'Play {t}', before: 'Before', after: 'After',
+    baAria: 'Before and after. Touch and hold to see the before, tap to switch.',
+    copy: 'Copy request', copied: 'Copied', copyFail: 'Copy failed',
+    needs: 'Add your name and your email so I can reply.',
+    sum: { head: 'Project request for Hadeer Hanafy', name: 'Name', email: 'Email', phone: 'WhatsApp / Telegram', brand: 'Brand or product', service: 'Service', budget: 'Budget', idea: 'Idea' },
+    services: ['AI CGI', 'Brand Commercial', 'Trend-Led Content', 'Expert Branding', '3D Website', 'Creative Direction']
+  };
+  if (X) for (var uk in X.ui) UI[uk] = X.ui[uk];
+  var CATS = UI.cats;
+  // text of a film in the page language (the English text lives in PROJECTS, the Arabic text in i18n-ar.js)
+  function txt(p, k) { var f = X && X.films && X.films[p.full]; return (f && f[k] != null) ? f[k] : p[k]; }
 
   // client / country: only what the site or the brief already states. Left out when unknown, never guessed.
   var PROJECTS = [
     { title: 'From the desk to the sky', cat: 'cgi', tag: 'Hook', client: 'Travel content creator',
       summary: 'The opening hook of a travel creator’s video: a toy plane lifts off a laptop keyboard, becomes a real jet over a seaside town, and lands the creator in a window seat.',
-      poster: 'assets/w11-poster.webp', full: 'assets/w11.mp4' },
+      poster: '/assets/w11-poster.webp', full: '/assets/w11.mp4' },
     { title: 'The shave that never ends', cat: 'expert', client: 'Medical group',
       summary: 'A wordless story about the daily cycle of shaving and regrowth, and the clinic session that ends it. Made for Al Hoqail Medical Group.',
-      stat: '215,000+ views', poster: 'assets/w1-poster.webp', full: 'assets/w1.mp4' },
+      stat: '215,000+ views', poster: '/assets/w1-poster.webp', full: '/assets/w1.mp4' },
     { title: 'Wherever the laptop opens', cat: 'expert', tag: 'Hook', client: 'Travel content creator',
       summary: 'A hook for a travel creator’s video: the same creator, recognisable in every scene, from a stone room to a city seen from above, the planet turning and an icy pier at sunset.',
-      poster: 'assets/w12-poster.webp', full: 'assets/w12.mp4' },
+      poster: '/assets/w12-poster.webp', full: '/assets/w12.mp4' },
     { title: 'The route, drawn on the map', cat: 'trend', tag: 'Hook', client: 'Travel content creator', wide: true,
       summary: 'A hook for a travel creator’s video: a glowing route draws itself from Denmark to Turkey on a dark map, so the trip reads in seconds.',
-      poster: 'assets/w13-poster.webp', full: 'assets/w13.mp4' },
+      poster: '/assets/w13-poster.webp', full: '/assets/w13.mp4' },
     { title: 'Worth breaking a window for', cat: 'trend', client: 'Dermatology clinic', country: 'Saudi Arabia',
       summary: 'A known action trend rebuilt around the clinic’s own product box: a woman smashes a car window to grab it off the back seat and sprints down the street with it.',
-      poster: 'assets/w16-poster.webp', full: 'assets/w16.mp4' },
+      poster: '/assets/w16-poster.webp', full: '/assets/w16.mp4' },
     { title: 'The menu, one tap at a time', cat: 'brand', client: 'Restaurant', country: 'Saudi Arabia',
       summary: 'The restaurant’s own menu, dish by dish: a finger moves through each one, named on screen, and the film ends on the restaurant’s sign.',
-      poster: 'assets/w15-poster.webp', full: 'assets/w15.mp4' },
+      poster: '/assets/w15-poster.webp', full: '/assets/w15.mp4' },
     { title: 'The pear everyone teased', cat: 'expert', client: 'Dermatology clinic', country: 'Saudi Arabia',
       summary: 'A pear carries the story of the many women who are teased over the muscle that sits inward in their bodies. Layan, the 3D version of the doctor’s real assistant, takes her to the clinic, where the doctor shapes her body and she walks out happy. The message: what people tease you about can simply be treated.',
-      poster: 'assets/w14-poster.webp', full: 'assets/w14.mp4' },
+      poster: '/assets/w14-poster.webp', full: '/assets/w14.mp4' },
     { title: 'Say it out loud', cat: 'expert', client: 'Child-psychology specialist', country: 'Jordan',
       summary: 'A boy learns to say no in three steps. Written and voiced in Jordanian dialect for a child-psychology specialist building her practice.',
-      stat: '35,000+ views', poster: 'assets/w2-poster.webp', full: 'assets/w2.mp4' },
+      stat: '35,000+ views', poster: '/assets/w2-poster.webp', full: '/assets/w2.mp4' },
     { title: 'When the kitchen goes down', cat: 'brand', client: 'Maintenance company', country: 'UAE',
       summary: 'Service stops mid-rush: the flame dies, the orders pile up, and one call brings the crew. A dialogue-free film for the maintenance arm of Miz in the UAE.',
-      poster: 'assets/w3-poster.webp', full: 'assets/w3.mp4' },
+      poster: '/assets/w3-poster.webp', full: '/assets/w3.mp4' },
     { title: 'Her trend, not the trend', cat: 'trend', client: 'Dermatology clinic', country: 'Saudi Arabia',
       summary: 'A known trend taken apart and rebuilt around one doctor’s identity, down to her own cup and her own screen. Made for Dr. Amira Kamal.',
-      poster: 'assets/w4-poster.webp', full: 'assets/w4.mp4' },
+      poster: '/assets/w4-poster.webp', full: '/assets/w4.mp4' },
     { title: 'Meet Layan', cat: 'expert', client: 'Dermatology clinic', country: 'Saudi Arabia',
       summary: 'A miniature 3D version of the clinic’s own assistant, designed from a single photo, launching the series she now hosts. Made for Dr. Amira Kamal in Saudi Arabia.',
-      poster: 'assets/w5-poster.webp', full: 'assets/w5.mp4' },
+      poster: '/assets/w5-poster.webp', full: '/assets/w5.mp4' },
     { title: 'Out of the billboard', cat: 'cgi', client: 'Dermatology clinic', country: 'Saudi Arabia',
       summary: 'A product handed off a city billboard straight into a hand on the street. Built around REJURAN’s own packaging for Dr. Amira Kamal.',
-      poster: 'assets/w6-poster.webp', full: 'assets/w6.mp4' },
+      poster: '/assets/w6-poster.webp', full: '/assets/w6.mp4' },
     { title: 'The storefront that serves itself', cat: 'cgi', client: 'Cafe & restaurant',
       summary: 'Giant dishes rise out of a cafe facade until the whole menu is standing on the street. Produced through a marketing agency for Menta Cafe & Restaurant.',
-      poster: 'assets/w7-poster.webp', full: 'assets/w7.mp4' },
+      poster: '/assets/w7-poster.webp', full: '/assets/w7.mp4' },
     { title: 'Results, out of the bag', cat: 'brand', client: 'Dermatology and aesthetics clinic', country: 'Saudi Arabia',
       summary: 'Filler cases lift out of the clinic’s own shopping bag and arrange themselves, turning a plain before-and-after into a product reveal. Made for a dermatology and aesthetics clinic in Saudi Arabia.',
-      poster: 'assets/w8-poster.webp', full: 'assets/w8.mp4' },
+      poster: '/assets/w8-poster.webp', full: '/assets/w8.mp4' },
     { title: 'Skip the invoice', cat: 'cgi', tag: 'Concept', client: 'Self-initiated concept',
       summary: 'A product reveal built around one line: skip the invoice, do the collab. Self-initiated concept for COLAB, not a commissioned campaign.',
-      poster: 'assets/w9-poster.webp', full: 'assets/w9.mp4' },
+      poster: '/assets/w9-poster.webp', full: '/assets/w9.mp4' },
     { title: 'Every piece has its animal', cat: 'cgi', tag: 'Concept', client: 'Self-initiated concept',
       summary: 'A lioness in ruby, a panther in emerald, a wolf in diamonds — each animal wears the piece that matches it. Self-initiated concept inspired by L’azurde.',
-      poster: 'assets/w10-poster.webp', full: 'assets/w10.mp4' }
+      poster: '/assets/w10-poster.webp', full: '/assets/w10.mp4' }
   ];
 
-  var SERVICES = ['AI CGI', 'Brand Commercial', 'Trend-Led Content', 'Expert Branding', '3D Website', 'Creative Direction'];
+  var SERVICES = UI.services;
 
   // render pass: one sweep every RP_PERIOD seconds, lasting RP_DUR seconds
   var RP_PERIOD = 7.0, RP_DUR = 1.45;
-  var FILTERS = [['all', 'All work'], ['cgi', 'AI CGI'], ['brand', 'Brand Commercials'], ['trend', 'Trend-Led'], ['expert', 'Expert Branding']];
+  var FILTERS = [['all', UI.all], ['cgi', CATS.cgi], ['brand', CATS.brand], ['trend', CATS.trend], ['expert', CATS.expert]];
 
   var $ = function (id) { return document.getElementById(id); };
   var root = $('hh-root');
@@ -144,7 +159,7 @@
     if (p.tag) {
       var tg = document.createElement('span');
       tg.className = 'card-tag';
-      tg.textContent = p.tag;
+      tg.textContent = txt(p, 'tag');
       media.appendChild(tg);
     }
 
@@ -152,7 +167,7 @@
     img.className = 'card-loop';
     img.src = p.poster;
     img.width = 640; img.height = 800;
-    img.alt = p.title;
+    img.alt = txt(p, 'title');
     img.loading = 'lazy';
     img.decoding = 'async';
     media.appendChild(img);
@@ -160,7 +175,7 @@
     var open = document.createElement('button');
     open.type = 'button';
     open.className = 'card-open';
-    open.setAttribute('aria-label', 'Play ' + p.title);
+    open.setAttribute('aria-label', UI.play.replace('{t}', txt(p, 'title')));
     open.addEventListener('click', function () { openPlay(p, open); });
     media.appendChild(open);
     attachPreview(media, p, open);
@@ -168,12 +183,12 @@
     var tag = document.createElement('span');
     tag.className = 'play-tag';
     tag.setAttribute('aria-hidden', 'true');
-    tag.textContent = 'Watch the film';
+    tag.textContent = UI.watch;
     media.appendChild(tag);
 
     var body = document.createElement('div');
     body.className = 'card-body';
-    var who = [p.client, p.country].filter(Boolean).join(' · ');
+    var who = [txt(p, 'client'), txt(p, 'country')].filter(Boolean).join(' · ');
     if (who) {
       var meta = document.createElement('p');
       meta.className = 'card-meta';
@@ -182,16 +197,16 @@
     }
     var h3 = document.createElement('h3');
     h3.className = 'card-title';
-    h3.textContent = p.title;
+    h3.textContent = txt(p, 'title');
     var sum = document.createElement('p');
     sum.className = 'card-sum';
-    sum.textContent = p.summary;
+    sum.textContent = txt(p, 'summary');
     body.appendChild(h3);
     body.appendChild(sum);
     if (p.stat) {
       var st = document.createElement('p');
       st.className = 'card-stat';
-      st.textContent = p.stat;
+      st.textContent = txt(p, 'stat');
       body.appendChild(st);
     }
 
@@ -232,8 +247,9 @@
     t.addEventListener('click', function () { selectAudience(i, false); });
     t.addEventListener('keydown', function (e) {
       var n = audTabs.length, k = -1;
-      if (e.key === 'ArrowRight') k = (i + 1) % n;
-      else if (e.key === 'ArrowLeft') k = (i + n - 1) % n;
+      var nextKey = RTL ? 'ArrowLeft' : 'ArrowRight', prevKey = RTL ? 'ArrowRight' : 'ArrowLeft';
+      if (e.key === nextKey) k = (i + 1) % n;
+      else if (e.key === prevKey) k = (i + n - 1) % n;
       else if (e.key === 'Home') k = 0;
       else if (e.key === 'End') k = n - 1;
       if (k >= 0) { e.preventDefault(); selectAudience(k, true); }
@@ -246,8 +262,8 @@
 
   function openPlay(p, src) {
     lbReturn = src || document.activeElement;
-    lb.setAttribute('aria-label', p.title);
-    lbCap.textContent = p.title;
+    lb.setAttribute('aria-label', txt(p, 'title'));
+    lbCap.textContent = txt(p, 'title');
     player.poster = p.poster;
     lb.classList.toggle('wide', !!p.wide);
     player.src = p.full;
@@ -297,7 +313,7 @@
     formStep.hidden = false;
     sentStep.hidden = true;
     errEl.hidden = true;
-    $('hh-copy').textContent = 'Copy request';
+    $('hh-copy').textContent = UI.copy;
     modal.hidden = false;
     scrim.hidden = false;
     document.body.style.overflow = 'hidden';
@@ -315,20 +331,21 @@
   function val(id) { return ($(id).value || '').trim(); }
 
   function buildSummary() {
-    var lines = ['Project request for Hadeer Hanafy'];
-    if (val('bk-name')) lines.push('Name: ' + val('bk-name'));
-    if (val('bk-contact')) lines.push('Email: ' + val('bk-contact'));
-    if (val('bk-phone')) lines.push('WhatsApp / Telegram: ' + val('bk-phone'));
-    if (val('bk-brand')) lines.push('Brand or product: ' + val('bk-brand'));
-    if (service) lines.push('Service: ' + service);
-    if (val('bk-budget')) lines.push('Budget: $' + val('bk-budget'));
-    if (val('bk-idea')) lines.push('Idea: ' + val('bk-idea'));
+    var L = UI.sum;
+    var lines = [L.head];
+    if (val('bk-name')) lines.push(L.name + ': ' + val('bk-name'));
+    if (val('bk-contact')) lines.push(L.email + ': ' + val('bk-contact'));
+    if (val('bk-phone')) lines.push(L.phone + ': ' + val('bk-phone'));
+    if (val('bk-brand')) lines.push(L.brand + ': ' + val('bk-brand'));
+    if (service) lines.push(L.service + ': ' + service);
+    if (val('bk-budget')) lines.push(L.budget + ': $' + val('bk-budget'));
+    if (val('bk-idea')) lines.push(L.idea + ': ' + val('bk-idea'));
     return lines.join('\n');
   }
 
   $('hh-review').addEventListener('click', function () {
     if (!val('bk-name') || !val('bk-contact')) {
-      errEl.textContent = 'Add your name and your email so I can reply.';
+      errEl.textContent = UI.needs;
       errEl.hidden = false;
       return;
     }
@@ -348,10 +365,10 @@
     var self = this;
     try {
       navigator.clipboard.writeText($('hh-summary').textContent).then(
-        function () { self.textContent = 'Copied'; },
-        function () { self.textContent = 'Copy failed'; }
+        function () { self.textContent = UI.copied; },
+        function () { self.textContent = UI.copyFail; }
       );
-    } catch (e) { self.textContent = 'Copy failed'; }
+    } catch (e) { self.textContent = UI.copyFail; }
   });
 
   Array.prototype.forEach.call(document.querySelectorAll('[data-book]'), function (b) {
@@ -405,6 +422,7 @@
     var rp = $('hh-rp'), wire = $('hh-wire'), line = $('hh-line');
     var reduce = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
     var ids = NAV_IDS, sides = [0.5, 1, 0, 1, 0];
+    if (RTL) sides = sides.map(function (s) { return 1 - s; });   // the following character keeps to the margin opposite the text
     var smooth = function (a, b, v) { var x = Math.max(0, Math.min(1, (v - a) / (b - a))); return x * x * (3 - 2 * x); };
 
     var anim = [], counterState = [], pars = [];
@@ -484,7 +502,7 @@
       function small() { return (window.innerWidth || 1200) <= 900; }
       function paint(before) {
         b.classList.toggle('show-before', before);
-        if (st) st.textContent = before ? 'Before' : 'After';
+        if (st) st.textContent = before ? UI.before : UI.after;
         b.setAttribute('aria-pressed', before ? 'true' : 'false');
       }
       var demoT = [], touched = false;
@@ -503,7 +521,7 @@
         seen.observe(b);
       }
       b.setAttribute('role', 'button'); b.tabIndex = 0;
-      b.setAttribute('aria-label', 'Before and after. Touch and hold to see the before, tap to switch.');
+      b.setAttribute('aria-label', UI.baAria);
       b.addEventListener('contextmenu', function (e) { if (small()) e.preventDefault(); });
       b.addEventListener('pointerdown', function () { if (!small()) return; interacted(); t0 = performance.now(); paint(!base); });
       function end(e) {

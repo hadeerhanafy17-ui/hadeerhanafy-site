@@ -5,9 +5,16 @@ Vercel from `main` (no build step; the repo root is served as-is).
 
 ## Layout
 
-- `index.html` — markup, styles, and one small inline bootstrap script
+- `index.html` — English page: markup and one small inline bootstrap script
+- `ar/index.html` — Arabic page (served at `/ar`, `lang="ar" dir="rtl"`). Same structure and ids as
+  `index.html`, so any markup or copy change must be made in **both** files. Language switch is the
+  `.lang` link in the header; `hreflang` alternates are in both heads and in `sitemap.xml`
+- `styles.css` — all styles, shared by both pages. The `[dir="rtl"]` block at the end holds the Arabic
+  overrides (Cairo font, zero letter-spacing, mirrored positions)
 - `app.js` — all behaviour (character sprite loop, scroll reveals, work grid,
-  process panel, booking modal, video lightbox)
+  process panel, booking modal, video lightbox). Strings are English; on the Arabic page
+  `i18n-ar.js` (loaded first) sets `window.HH_AR` with the Arabic UI strings and film texts
+- `i18n-ar.js` — Arabic strings for everything `app.js` renders (cards, filters, form messages, summary)
 - `fx.js` — the motion layer, hand-written WebGL with no libraries: polished gold spheres in
   real perspective (they dodge the cursor, shift with parallax and speed up as you scroll),
   the hero's 3D parallax (character and headline) and the card tilt. Respects
@@ -31,7 +38,7 @@ These are standing requirements from the owner. Treat them as non-negotiable.
    `X-Frame-Options`, `frame-ancestors 'none'`, `Referrer-Policy`,
    `Permissions-Policy`, `Cross-Origin-Opener-Policy`.
 4. **CSP uses script hashes, not `unsafe-inline`.** Any edit to an inline
-   `<script>` in `index.html` invalidates its hash — recompute the sha256 of each
+   `<script>` in `index.html` or `ar/index.html` invalidates its hash — recompute the sha256 of each
    inline script body and update `script-src` in `vercel.json` in the same commit,
    or the page silently stops working. Prefer putting new code in `app.js`.
 5. **No inline event handlers** (`onclick=`, `onerror=`, …) and no `style=`
