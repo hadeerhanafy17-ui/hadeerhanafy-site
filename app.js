@@ -24,7 +24,7 @@
       summary: 'The restaurant’s own menu, dish by dish: a finger moves through each one, named on screen, and the film ends on the restaurant’s sign.',
       poster: 'assets/w15-poster.webp', full: 'assets/w15.mp4' },
     { title: 'The pear everyone teased', cat: 'expert', client: 'Dermatology clinic', country: 'Saudi Arabia',
-      summary: 'A pear carries the story of the many women who are bullied over their bodies. Layan, the 3D version of the doctor’s real assistant, takes her to the clinic, where the doctor shapes her body and she walks out happy.',
+      summary: 'A pear carries the story of the many women who are teased over the muscle that sits inward in their bodies. Layan, the 3D version of the doctor’s real assistant, takes her to the clinic, where the doctor shapes her body and she walks out happy.',
       poster: 'assets/w14-poster.webp', full: 'assets/w14.mp4' },
     { title: 'Say it out loud', cat: 'expert', client: 'Child-psychology specialist', country: 'Jordan',
       summary: 'A boy learns to say no in three steps. Written and voiced in Jordanian dialect for a child-psychology specialist building her practice.',
