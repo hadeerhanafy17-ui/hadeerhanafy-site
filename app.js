@@ -7,7 +7,6 @@
   var UI = {
     cats: { cgi: 'AI CGI', brand: 'Brand Commercials', trend: 'Trend-Led', expert: 'Expert Branding' },
     all: 'All work', watch: 'Watch the film', play: 'Play {t}', before: 'Before', after: 'After',
-    baAria: 'Before and after. Touch and hold to see the before, tap to switch.',
     copy: 'Copy request', copied: 'Copied', copyFail: 'Copy failed',
     needs: 'Add your name and your email so I can reply.',
     sum: { head: 'Project request for Hadeer Hanafy', name: 'Name', email: 'Email', phone: 'WhatsApp / Telegram', brand: 'Brand or product', service: 'Service', budget: 'Budget', idea: 'Idea' },
@@ -453,89 +452,62 @@
     }
 
     /* ---- before → after (one block per .ba section) ----
-       Desktop: the stage is pinned (sticky) and scroll progress through the track slides the four
-       shots out from behind the product card (--k per shot: 1 = hidden behind it, 0 = in place;
-       --e on the board drives the card scale and the "After" labels).
-       Mobile: no pin, each shot eases in as it scrolls into view. Reduced motion: stays in the final state. */
+       The stage is pinned (sticky) and scroll progress through the track moves the four shots out from behind the product card
+       (--k per shot: 1 = hidden behind it, 0 = in place; --e on the board drives the card scale and the "After" labels).
+       Desktop: the shots slide sideways out of a row (--dx in card widths, set in CSS).
+       Phones: the card is on top and the shots fly down into a 2x2 grid one after another, a little rotated on the way;
+       their travel (--fx / --fy in px) is measured from the layout. Reduced motion: stays in the final state. */
     var BA_TOP = 68;                                               // sticky offset = height of the scrolled nav
-    var BA_WIN = [[0.20, 0.68], [0.04, 0.50], [0.04, 0.50], [0.20, 0.68]]; // inner shots first, outer ones after
+    var BA_WIN = [[0.20, 0.68], [0.04, 0.50], [0.04, 0.50], [0.20, 0.68]];   // desktop: inner shots first, outer ones after
+    var BA_WIN_S = [[0.04, 0.34], [0.16, 0.46], [0.28, 0.58], [0.40, 0.70]]; // phones: one after another, then a pause on the full grid
+    var BA_ROT = [-9, 7, -6, 8];                                   // degrees at the start of the flight, per shot
     var baSecs = Array.prototype.slice.call(root.querySelectorAll('.ba')).map(function (sec) {
       return {
         track: sec.querySelector('.ba-track'), stage: sec.querySelector('.ba-stage'), board: sec.querySelector('.ba-board'),
-        shots: Array.prototype.slice.call(sec.querySelectorAll('.ba-shot')), last: {}
+        before: sec.querySelector('.ba-before'), shots: Array.prototype.slice.call(sec.querySelectorAll('.ba-shot')), last: {}
       };
     });
+    function small() { return (window.innerWidth || 1200) <= 900; }
 
     function baSet(S, el, name, v, key) {
       var s = v.toFixed(3);
       if (S.last[key] !== s) { S.last[key] = s; el.style.setProperty(name, s); }
     }
 
-    function updateBA(vh) {
-      if (reduce) return;
-      var desktop = (window.innerWidth || 1200) > 900;
-      if (!desktop) return;                                          // small screens use the touch card below
+    // phones: how far each shot has to travel to sit behind the product card (measured with the transforms switched off)
+    function measureBA() {
+      if (!small()) return;
       baSecs.forEach(function (S) {
-        if (!S.track || !S.board) return;
-        var i, k, e = 0;
-        if (desktop) {
-          var r = S.track.getBoundingClientRect();
-          var p = Math.max(0, Math.min(1, (BA_TOP - r.top) / Math.max(1, r.height - S.stage.offsetHeight)));
-          for (i = 0; i < S.shots.length; i++) baSet(S, S.shots[i], '--k', 1 - smooth(BA_WIN[i][0], BA_WIN[i][1], p), i);
-          e = smooth(0.3, 0.75, p);
-        } else {
-          for (i = 0; i < S.shots.length; i++) {
-            k = 1 - smooth(0, 1, (vh * 0.94 - S.shots[i].getBoundingClientRect().top) / (vh * 0.2));
-            baSet(S, S.shots[i], '--k', k, i);
-            e = Math.max(e, 1 - k);
-          }
-        }
-        baSet(S, S.board, '--e', e, 'e');
+        if (!S.board || !S.before) return;
+        S.board.classList.add('measuring');
+        var b = S.before.getBoundingClientRect(), cx = b.left + b.width / 2, cy = b.top + b.height / 2;
+        S.shots.forEach(function (sh, i) {
+          var r = sh.getBoundingClientRect();
+          sh.style.setProperty('--fx', (cx - (r.left + r.width / 2)).toFixed(1) + 'px');
+          sh.style.setProperty('--fy', (cy - (r.top + r.height / 2)).toFixed(1) + 'px');
+          sh.style.setProperty('--fr', BA_ROT[i] + 'deg');
+        });
+        S.board.classList.remove('measuring');
       });
     }
+    var measureT = 0;
+    function measureSoon() { clearTimeout(measureT); measureT = setTimeout(measureBA, 120); }
+    window.addEventListener('resize', measureSoon);
+    window.addEventListener('load', measureBA);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(measureBA);
+    measureBA();
 
-    /* small screens: touch (or press and hold) the card to see the Before; release to go back to the After; a quick tap switches and keeps it */
-    baSecs.forEach(function (S) {
-      var b = S.board, st = b && b.querySelector('.ba-state');
-      if (!b) return;
-      var base = false, t0 = 0;                                       // base: false = After, true = Before
-      function small() { return (window.innerWidth || 1200) <= 900; }
-      function paint(before) {
-        b.classList.toggle('show-before', before);
-        if (st) st.textContent = before ? UI.before : UI.after;
-        b.setAttribute('aria-pressed', before ? 'true' : 'false');
-      }
-      var demoT = [], touched = false;
-      function stopDemo() { demoT.forEach(clearTimeout); demoT = []; }
-      function demo() {                                                // when the card first scrolls into view it shows the other side twice, so nobody has to guess
-        if (REDUCE || touched) return;
-        [[900, true], [2500, false], [4200, true], [5800, false]].forEach(function (s) {
-          demoT.push(setTimeout(function () { if (!touched && small()) paint(s[1]); }, s[0]));
-        });
-      }
-      function interacted() { touched = true; stopDemo(); }
-      if ('IntersectionObserver' in window) {
-        var seen = new IntersectionObserver(function (entries) {
-          entries.forEach(function (en) { if (en.isIntersecting && small()) { seen.disconnect(); demo(); } });
-        }, { threshold: 0.6 });
-        seen.observe(b);
-      }
-      b.setAttribute('role', 'button'); b.tabIndex = 0;
-      b.setAttribute('aria-label', UI.baAria);
-      b.addEventListener('contextmenu', function (e) { if (small()) e.preventDefault(); });
-      b.addEventListener('pointerdown', function () { if (!small()) return; interacted(); t0 = performance.now(); paint(!base); });
-      function end(e) {
-        if (!t0) return;
-        var quick = performance.now() - t0 < 280;
-        t0 = 0;
-        if (quick && e.type === 'pointerup') base = !base;
-        paint(base);
-      }
-      b.addEventListener('pointerup', end); b.addEventListener('pointercancel', end); b.addEventListener('pointerleave', end);
-      b.addEventListener('keydown', function (e) {
-        if (small() && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); interacted(); base = !base; paint(base); }
+    function updateBA() {
+      if (reduce) return;
+      var win = small() ? BA_WIN_S : BA_WIN;
+      baSecs.forEach(function (S) {
+        if (!S.track || !S.board) return;
+        var r = S.track.getBoundingClientRect();
+        var p = Math.max(0, Math.min(1, (BA_TOP - r.top) / Math.max(1, r.height - S.stage.offsetHeight)));
+        for (var i = 0; i < S.shots.length; i++) baSet(S, S.shots[i], '--k', 1 - smooth(win[i][0], win[i][1], p), i);
+        baSet(S, S.board, '--e', smooth(0.3, 0.75, p), 'e');
       });
-    });
+    }
 
     Array.prototype.forEach.call(root.querySelectorAll('.ba-watch'), function (btn) {
       btn.addEventListener('click', function () {
@@ -584,7 +556,7 @@
         pars[i].style.transform = 'translateY(' + Math.round(off * -26) + 'px)';
       }
 
-      updateBA(vh);
+      updateBA();
 
       var heroH = Math.max(1, hero.getBoundingClientRect().height);
       var p = Math.max(0, Math.min(1, scrollY / heroH));
