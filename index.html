@@ -53,14 +53,14 @@
 
   /* site background — burgundy velvet (texture rebuilt from the carousel slides), fixed behind every section */
   .site-bg { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; background: #200509 url("assets/velvet.webp") center / cover no-repeat; }
-  .bg-vignette { position: absolute; inset: 0; background: radial-gradient(ellipse 92% 82% at 50% 44%, transparent 38%, rgba(10, 1, 3, .5) 100%); }
+  .bg-vignette { position: absolute; inset: 0; background: radial-gradient(ellipse 92% 82% at 50% 44%, transparent 38%, rgba(10, 1, 3, .34) 100%); }
   .wrap { max-width: 1180px; margin: 0 auto; padding: 0 40px; }
   .chap { padding: 104px 0; scroll-margin-top: 72px; }
   .sand { background: rgba(12, 2, 5, .46); }
 
   .ch { display: flex; align-items: center; gap: 12px; margin: 0 0 26px; font-size: 13px; letter-spacing: .08em; color: var(--ink-3); }
   .ch-num { color: var(--accent); font-variant-numeric: tabular-nums; }
-  .h2 { margin: 0; max-width: 18ch; font-family: var(--serif); font-stretch: 104%; font-weight: 650; font-size: clamp(36px, 4.6vw, 64px); line-height: 1.02; letter-spacing: -.032em; color: var(--ink); text-wrap: balance; }
+  .h2 { text-shadow: 0 2px 20px rgba(18, 3, 7, .5); margin: 0; max-width: 18ch; font-family: var(--serif); font-stretch: 104%; font-weight: 650; font-size: clamp(36px, 4.6vw, 64px); line-height: 1.02; letter-spacing: -.032em; color: var(--ink); text-wrap: balance; }
 
   /* nav */
   .nav { position: sticky; top: 0; z-index: 50; display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 20px 40px; border-bottom: 1px solid transparent; transition: background .5s var(--ease), border-color .5s, padding .5s var(--ease); }
@@ -86,7 +86,7 @@
   .hero-grid { position: relative; z-index: 2; display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 40px; align-items: center; width: 100%; }
   .hero-copy { position: relative; z-index: 3; }
   .hero-char { position: relative; height: clamp(440px, calc(100svh - 240px), 720px); perspective: 1100px; }
-  .stage3d { position: absolute; inset: 0; transform-style: preserve-3d; transform: rotateY(calc(var(--px, 0) * 11deg)) rotateX(calc(var(--py, 0) * -6deg)); will-change: transform; }
+  .stage3d { position: absolute; inset: 0; transform-style: preserve-3d; transform: rotateY(calc(var(--px, 0) * 8deg)) rotateX(calc(var(--py, 0) * -4.5deg)); will-change: transform; }
   .screen3d { position: absolute; left: 50%; top: 3%; width: 104%; height: 62%; padding: 3px; border-radius: 22px; background: var(--gold-fill); transform: translateX(-50%) translateZ(-70px); box-shadow: 0 40px 90px -30px rgba(0, 0, 0, .8), 0 0 80px -8px rgba(239, 198, 111, .38); }
   .screen3d img { display: block; width: 100%; height: 100%; object-fit: cover; border-radius: 19px; }
   .screen-gloss { position: absolute; inset: 3px; border-radius: 19px; pointer-events: none; background: linear-gradient(115deg, rgba(255, 255, 255, .24) 0%, rgba(255, 255, 255, 0) 38%); }
@@ -105,8 +105,9 @@
   @keyframes cueBob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(6px); } }
 
   .hero-title { margin: 0 0 26px; font-family: var(--serif); font-weight: 400; font-size: clamp(40px, 4.5vw, 68px); line-height: 1; letter-spacing: -.02em; color: var(--ink); }
-  .hero-title em { font-style: normal; color: var(--accent); background: linear-gradient(100deg, #B98A3F 0%, #F6DC98 34%, #EFC66F 50%, #C99A4C 76%, #F3D488 100%) 0 0 / 230% 100%; -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; animation: sheen 7s ease-in-out infinite; }
+  .hero-title em { font-style: normal; color: var(--accent); background: linear-gradient(100deg, #D9AE5E 0%, #F6DC98 34%, #EFC66F 50%, #DDB25F 76%, #F3D488 100%) 0 0 / 230% 100%; -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; animation: sheen 7s ease-in-out infinite; }
   @keyframes sheen { 0%, 100% { background-position: 0% 0; } 50% { background-position: 100% 0; } }
+  .hero-title, .hero-sub { filter: drop-shadow(0 2px 14px rgba(18, 3, 7, .6)); }
   .hero-sub { margin: 0 0 32px; max-width: 44ch; font-size: clamp(17px, 1.5vw, 19px); line-height: 1.62; color: var(--ink-2); }
   .hero-cta { display: flex; gap: 12px; flex-wrap: wrap; }
   @keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
@@ -427,10 +428,6 @@
             <div class="char3d">
               <span class="floor-shadow" aria-hidden="true"></span>
               <div class="sprite" id="hh-sprite" role="img" aria-label="Hadeer Hanafy's 3D character, following the cursor"></div>
-              <div class="rp" id="hh-rp" aria-hidden="true">
-                <span class="rp-wire" id="hh-wire"></span>
-                <span class="rp-line" id="hh-line"></span>
-              </div>
             </div>
           </div>
         </div>
@@ -451,14 +448,41 @@
     </section>
 
     <section id="story" class="ba" aria-labelledby="ba-title">
-      <div class="ba-track" id="ba-track">
-        <div class="ba-stage" id="ba-stage">
+      <div class="ba-track">
+        <div class="ba-stage">
           <div class="wrap">
             <div class="ba-head">
               <div class="ch reveal"><span class="ch-num">→</span><span>Before / After</span></div>
               <h2 class="h2 reveal" id="ba-title"><span class="mask"><span>One product. A whole film.</span></span></h2>
             </div>
-            <div class="ba-board" id="ba-board">
+            <div class="ba-board">
+              <figure class="ba-before"><img src="assets/ba-jw-before.webp" alt="The four pieces of jewelry on their own: a ruby pendant, an emerald pendant, a diamond chain and a ruby necklace" width="640" height="800" loading="lazy" decoding="async"></figure>
+              <p class="ba-lab ba-lab-before">Before</p>
+              <p class="ba-lab ba-lab-after l">After</p>
+              <p class="ba-lab ba-lab-after r" aria-hidden="true">After</p>
+              <figure class="ba-shot s1"><img src="assets/ba-jw-1.webp" alt="A lioness wearing the ruby pendant" width="400" height="500" loading="lazy" decoding="async"></figure>
+              <figure class="ba-shot s2"><img src="assets/ba-jw-2.webp" alt="A black panther wearing the emerald pendant" width="400" height="500" loading="lazy" decoding="async"></figure>
+              <figure class="ba-shot s3"><img src="assets/ba-jw-3.webp" alt="A tiger wearing the diamond chain" width="400" height="500" loading="lazy" decoding="async"></figure>
+              <figure class="ba-shot s4"><img src="assets/ba-jw-4.webp" alt="A white wolf wearing the ruby necklace" width="400" height="500" loading="lazy" decoding="async"></figure>
+            </div>
+            <div class="ba-foot">
+              <p class="ba-cap"><strong>Every piece has its animal.</strong> Frames from one film, a self-initiated concept inspired by L’azurde.</p>
+              <button class="btn btn-line ba-watch" type="button" data-film="assets/w10.mp4">Watch the film</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="ba" aria-labelledby="ba-title-2">
+      <div class="ba-track">
+        <div class="ba-stage">
+          <div class="wrap">
+            <div class="ba-head">
+              <div class="ch reveal"><span class="ch-num">→</span><span>Before / After</span></div>
+              <h2 class="h2 reveal" id="ba-title-2"><span class="mask"><span>Another product, another film.</span></span></h2>
+            </div>
+            <div class="ba-board">
               <figure class="ba-before"><img src="assets/ba-before.webp" alt="The starting point: a plain shopping bag against a pale blue backdrop" width="640" height="800" loading="lazy" decoding="async"></figure>
               <p class="ba-lab ba-lab-before">Before</p>
               <p class="ba-lab ba-lab-after l">After</p>
@@ -470,7 +494,7 @@
             </div>
             <div class="ba-foot">
               <p class="ba-cap"><strong>Results, out of the bag.</strong> Frames from one film, made for a dermatology and aesthetics clinic in Saudi Arabia.</p>
-              <button class="btn btn-line" type="button" id="ba-watch">Watch the film</button>
+              <button class="btn btn-line ba-watch" type="button" data-film="assets/w8.mp4">Watch the film</button>
             </div>
           </div>
         </div>

@@ -412,44 +412,52 @@
       requestAnimationFrame(tick);
     }
 
-    /* ---- before → after ----
-       Desktop: the stage is pinned (sticky) and scroll progress through the track slides the
-       four shots out from behind the product card (--k per shot: 1 = hidden behind it, 0 = in place;
+    /* ---- before → after (one block per .ba section) ----
+       Desktop: the stage is pinned (sticky) and scroll progress through the track slides the four
+       shots out from behind the product card (--k per shot: 1 = hidden behind it, 0 = in place;
        --e on the board drives the card scale and the "After" labels).
        Mobile: no pin, each shot eases in as it scrolls into view. Reduced motion: stays in the final state. */
-    var baTrack = $('ba-track'), baStage = $('ba-stage'), baBoard = $('ba-board');
-    var baShots = Array.prototype.slice.call(root.querySelectorAll('.ba-shot'));
     var BA_TOP = 68;                                               // sticky offset = height of the scrolled nav
     var BA_WIN = [[0.20, 0.68], [0.04, 0.50], [0.04, 0.50], [0.20, 0.68]]; // inner shots first, outer ones after
-    var baLast = {};
+    var baSecs = Array.prototype.slice.call(root.querySelectorAll('.ba')).map(function (sec) {
+      return {
+        track: sec.querySelector('.ba-track'), stage: sec.querySelector('.ba-stage'), board: sec.querySelector('.ba-board'),
+        shots: Array.prototype.slice.call(sec.querySelectorAll('.ba-shot')), last: {}
+      };
+    });
 
-    function baSet(el, name, v, key) {
+    function baSet(S, el, name, v, key) {
       var s = v.toFixed(3);
-      if (baLast[key] !== s) { baLast[key] = s; el.style.setProperty(name, s); }
+      if (S.last[key] !== s) { S.last[key] = s; el.style.setProperty(name, s); }
     }
 
     function updateBA(vh) {
-      if (!baTrack || !baBoard || reduce) return;
-      var i, k, e = 0;
-      if ((window.innerWidth || 1200) > 900) {
-        var r = baTrack.getBoundingClientRect();
-        var p = Math.max(0, Math.min(1, (BA_TOP - r.top) / Math.max(1, r.height - baStage.offsetHeight)));
-        for (i = 0; i < baShots.length; i++) baSet(baShots[i], '--k', 1 - smooth(BA_WIN[i][0], BA_WIN[i][1], p), i);
-        e = smooth(0.3, 0.75, p);
-      } else {
-        for (i = 0; i < baShots.length; i++) {
-          k = 1 - smooth(0, 1, (vh * 0.94 - baShots[i].getBoundingClientRect().top) / (vh * 0.2));
-          baSet(baShots[i], '--k', k, i);
-          e = Math.max(e, 1 - k);
+      if (reduce) return;
+      var desktop = (window.innerWidth || 1200) > 900;
+      baSecs.forEach(function (S) {
+        if (!S.track || !S.board) return;
+        var i, k, e = 0;
+        if (desktop) {
+          var r = S.track.getBoundingClientRect();
+          var p = Math.max(0, Math.min(1, (BA_TOP - r.top) / Math.max(1, r.height - S.stage.offsetHeight)));
+          for (i = 0; i < S.shots.length; i++) baSet(S, S.shots[i], '--k', 1 - smooth(BA_WIN[i][0], BA_WIN[i][1], p), i);
+          e = smooth(0.3, 0.75, p);
+        } else {
+          for (i = 0; i < S.shots.length; i++) {
+            k = 1 - smooth(0, 1, (vh * 0.94 - S.shots[i].getBoundingClientRect().top) / (vh * 0.2));
+            baSet(S, S.shots[i], '--k', k, i);
+            e = Math.max(e, 1 - k);
+          }
         }
-      }
-      baSet(baBoard, '--e', e, 'e');
+        baSet(S, S.board, '--e', e, 'e');
+      });
     }
 
-    var baWatch = $('ba-watch');
-    if (baWatch) baWatch.addEventListener('click', function () {
-      var p = findFilm('assets/w8.mp4');
-      if (p) openPlay(p, baWatch);
+    Array.prototype.forEach.call(root.querySelectorAll('.ba-watch'), function (btn) {
+      btn.addEventListener('click', function () {
+        var p = findFilm(btn.getAttribute('data-film'));
+        if (p) openPlay(p, btn);
+      });
     });
 
     var look = 0, pointerSeen = false, lastPointer = -1e9;

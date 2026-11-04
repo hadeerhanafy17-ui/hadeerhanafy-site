@@ -24,46 +24,49 @@
   var VS = [
     'attribute vec2 a_corner; attribute vec3 a_c; attribute vec4 a_p;',
     'uniform vec2 u_aspect;',
-    'varying vec2 v_uv; varying vec4 v_p; varying float v_d;',
+    'varying vec2 v_uv; varying vec4 v_p; varying float v_d; varying vec2 v_ctr;',
     'void main() {',
     '  float q = 1.45 + a_p.y * 0.9;',
     '  vec2 off = a_corner * q * a_p.x;',
     '  gl_Position = vec4(a_c.xy + vec2(off.x / u_aspect.x, off.y), 0.0, 1.0);',
-    '  v_uv = a_corner * q; v_p = a_p; v_d = a_c.z;',
+    '  v_uv = a_corner * q; v_p = a_p; v_d = a_c.z; v_ctr = a_c.xy;',
     '}'
   ].join('\n');
 
   var FS = [
     '#ifdef GL_FRAGMENT_PRECISION_HIGH', 'precision highp float;', '#else', 'precision mediump float;', '#endif',
-    'varying vec2 v_uv; varying vec4 v_p; varying float v_d;',
-    'uniform float u_far;',
-    'vec3 env(vec3 r, float s) {',
-    '  float up = smoothstep(-0.35, 0.95, r.y);',
-    '  vec3 base = mix(vec3(0.10, 0.02, 0.03), vec3(1.0, 0.82, 0.55), up * up);',
-    '  float t = (r.y - 0.12 - 0.05 * sin(s * 6.0)) * 7.0;',
-    '  base += vec3(1.0, 0.86, 0.60) * exp(-t * t) * 0.9;',
-    '  base += vec3(1.0, 0.95, 0.85) * (smoothstep(0.90, 0.985, dot(r, normalize(vec3(-0.55, 0.65, 0.5)))) * 2.6',
-    '                                 + smoothstep(0.93, 0.99, dot(r, normalize(vec3(0.7, 0.2, 0.65)))) * 1.4);',
-    '  base += vec3(0.8, 0.25, 0.2) * smoothstep(0.2, 0.9, -r.y) * 0.35;',   // warm bounce from the burgundy below
-    '  return base;',
+    'varying vec2 v_uv; varying vec4 v_p; varying float v_d; varying vec2 v_ctr;',
+    'uniform float u_far; uniform float u_t; uniform vec2 u_asp2;',
+    // a warm photo studio: bright overhead, amber horizon, a floor that bounces warm light, one big window and one strip light
+    'vec3 env(vec3 r) {',
+    '  float h = r.y;',
+    '  vec3 sky = mix(vec3(0.95, 0.62, 0.24), vec3(1.55, 1.30, 1.00), smoothstep(0.0, 0.9, h));',
+    '  vec3 flr = mix(vec3(0.42, 0.20, 0.07), vec3(0.06, 0.025, 0.015), smoothstep(-0.05, -0.95, h));',
+    '  vec3 c = mix(flr, sky, smoothstep(-0.25, 0.25, h));',
+    '  float az = atan(r.x, r.z); float el = asin(clamp(h, -1.0, 1.0));',
+    '  float win = smoothstep(0.0, 0.10, 0.46 - abs(az + 0.9)) * smoothstep(0.0, 0.10, 0.30 - abs(el - 0.55));',
+    '  float strip = smoothstep(0.0, 0.06, 0.10 - abs(az - 1.15)) * smoothstep(0.0, 0.10, 0.75 - abs(el - 0.05));',
+    '  return c + vec3(2.7, 2.35, 1.9) * win + vec3(1.7, 1.4, 1.05) * strip;',
     '}',
     'void main() {',
     '  float rr = length(v_uv);',
     '  float blur = v_p.y;',
     '  if (rr > 1.45 + blur * 0.9) discard;',
-    '  float edge = 1.0 - smoothstep(0.98 - blur * 0.6, 1.02 + blur * 0.9, rr);',
+    '  float edge = 1.0 - smoothstep(0.985 - blur * 0.6, 1.015 + blur * 0.9, rr);',
     '  vec2 u2 = rr > 1.0 ? v_uv / rr : v_uv;',
     '  vec3 n = vec3(u2, sqrt(max(0.0, 1.0 - dot(u2, u2))));',
-    '  vec3 r = 2.0 * n.z * n - vec3(0.0, 0.0, 1.0);',
-    '  float fres = pow(1.0 - n.z, 4.0);',
-    '  vec3 F0 = vec3(1.0, 0.77, 0.36);',
-    '  vec3 F = F0 + (vec3(1.0) - F0) * fres * 0.55;',
-    '  vec3 col = F * env(r, v_p.w) * 0.9 + F0 * 0.10 * max(0.0, dot(n, normalize(vec3(-0.4, 0.6, 0.7))));',
-    '  col = col / (1.0 + 0.45 * col) * 1.35;',
-    '  col = mix(col, vec3(0.52, 0.34, 0.14), blur * 0.55);',            // depth of field: out-of-focus gold loses its contrast
+    '  vec3 v = normalize(vec3(-v_ctr.x * u_asp2.x * 0.5, -v_ctr.y * 0.5, 1.0));',      // towards the camera, so highlights shift as it floats across
+    '  float ndv = clamp(dot(n, v), 0.0, 1.0);',
+    '  vec3 r = 2.0 * dot(n, v) * n - v;',
+    '  float yaw = u_t * 0.18 + v_p.w * 6.283; float cy = cos(yaw); float sy = sin(yaw);',
+    '  r = vec3(cy * r.x + sy * r.z, r.y, -sy * r.x + cy * r.z);',                          // the studio slowly turns round it
+    '  vec3 F0 = vec3(1.0, 0.72, 0.30);',
+    '  vec3 F = F0 + (vec3(1.0) - F0) * pow(1.0 - ndv, 5.0);',
+    '  vec3 col = 1.0 - exp(-env(r) * F * 1.55);',
+    '  col = mix(col, vec3(0.55, 0.36, 0.14), blur * 0.55);',                               // out of focus: gold loses its contrast
     '  float ea = edge * (1.0 - blur * 0.3);',
-    '  float ha = (rr > 1.0 ? exp(-(rr - 1.0) * 5.0) : 1.0) * 0.18 * (1.0 - blur * 0.5);',
-    '  float fog = 1.0 - smoothstep(u_far * 0.55, u_far, v_d);',         // far spheres emerge out of the velvet
+    '  float ha = (rr > 1.0 ? exp(-(rr - 1.0) * 6.0) : 1.0) * 0.12 * (1.0 - blur * 0.5);',
+    '  float fog = 1.0 - smoothstep(u_far * 0.55, u_far, v_d);',
     '  float A = v_p.z * fog;',
     '  vec3 oc = col * ea + vec3(1.0, 0.72, 0.30) * ha * (1.0 - ea);',
     '  float oa = ea + ha * (1.0 - ea);',
@@ -85,7 +88,7 @@
     gl.useProgram(pr);
 
     var aCorner = gl.getAttribLocation(pr, 'a_corner'), aC = gl.getAttribLocation(pr, 'a_c'), aP = gl.getAttribLocation(pr, 'a_p');
-    var uAsp = gl.getUniformLocation(pr, 'u_aspect'), uFar = gl.getUniformLocation(pr, 'u_far');
+    var uAsp = gl.getUniformLocation(pr, 'u_aspect'), uAsp2 = gl.getUniformLocation(pr, 'u_asp2'), uFar = gl.getUniformLocation(pr, 'u_far'), uT = gl.getUniformLocation(pr, 'u_t');
     gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
     var STRIDE = 9 * 4;
     gl.enableVertexAttribArray(aCorner); gl.vertexAttribPointer(aCorner, 2, gl.FLOAT, false, STRIDE, 0);
@@ -98,7 +101,7 @@
     canvas.addEventListener('webglcontextlost', function (e) { e.preventDefault(); lost = true; });
 
     function spawn(s, anywhere) {
-      s.ax = rand(-1.1, 1.1); s.ay = rand(-0.95, 0.95);
+      s.ax = Math.random() < 0.82 ? (Math.random() < 0.5 ? -1 : 1) * rand(0.62, 1.12) : rand(-0.5, 0.5); s.ay = rand(-0.95, 0.95);
       s.d = anywhere ? rand(o.dMin, o.dMax) : o.dMax;
       s.r = rand(o.rMin, o.rMax); s.v = rand(0.75, 1.3); s.seed = Math.random();
       return s;
@@ -145,7 +148,7 @@
       gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT);
       if (n) {
         gl.bufferData(gl.ARRAY_BUFFER, data.subarray(0, n * 54), gl.DYNAMIC_DRAW);
-        gl.uniform2f(uAsp, aspect, 1); gl.uniform1f(uFar, o.far);
+        gl.uniform2f(uAsp, aspect, 1); gl.uniform2f(uAsp2, aspect, 1); gl.uniform1f(uFar, o.far); gl.uniform1f(uT, t);
         gl.drawArrays(gl.TRIANGLES, 0, n * 6);
       }
     }
@@ -157,11 +160,11 @@
   var back = null, front = null;
   var cb = $('fx-back'), cf = $('fx-front');
   if (cb) back = makeField(cb, {
-    n: small ? 10 : 20, dMin: 5.2, dMax: 22, far: 24, speed: 1.0, rMin: 0.035, rMax: 0.09, alpha: 0.58, dpr: 1.5, still: reduce,
-    blur: function (d) { return clamp(Math.abs(d - 10) / 12, 0, 1) * 0.75; }
+    n: small ? 6 : 10, dMin: 5.0, dMax: 20, far: 22, speed: 0.5, rMin: 0.06, rMax: 0.15, alpha: 0.9, dpr: 1.5, still: reduce,
+    blur: function (d) { return clamp(Math.abs(d - 9) / 11, 0, 1) * 0.7; }
   });
   if (cf && !reduce) front = makeField(cf, {
-    n: small ? 2 : 4, dMin: 2.4, dMax: 7.5, far: 14, speed: 2.1, rMin: 0.02, rMax: 0.05, alpha: 0.8, dpr: 1.25,
+    n: small ? 1 : 2, dMin: 2.4, dMax: 7.5, far: 14, speed: 1.2, rMin: 0.03, rMax: 0.06, alpha: 0.6, dpr: 1.25,
     blur: function (d) { return clamp((7.5 - d) / 5.1, 0, 1) * 0.9; }                        // bokeh as they pass the lens
   });
 
@@ -213,9 +216,9 @@
     var dt = Math.min(0.05, (now - last) / 1000); last = now;
     var y = window.scrollY;
     vel += (clamp((y - lastY) / Math.max(dt, 0.001), -4000, 4000) - vel) * 0.12; lastY = y;
-    if (now - ptr.last > 2600) { ptr.tx = Math.sin(now / 2400) * 0.55; ptr.ty = Math.cos(now / 3100) * 0.25; }   // idle sway
+    if (now - ptr.last > 2600) { ptr.tx = Math.sin(now / 2600) * 0.4; ptr.ty = Math.cos(now / 3300) * 0.18; }   // idle sway
     ptr.x += (ptr.tx - ptr.x) * 0.06; ptr.y += (ptr.ty - ptr.y) * 0.06;
-    var warp = clamp(Math.abs(vel) / 700, 0, 3.5);                                              // scrolling pulls the spheres faster
+    var warp = clamp(Math.abs(vel) / 900, 0, 2.2);                                              // scrolling pulls the spheres faster
     if (back) back.frame(dt, warp, now / 1000);
     if (front) front.frame(dt, warp * 0.8, now / 1000);
     updateStage();
