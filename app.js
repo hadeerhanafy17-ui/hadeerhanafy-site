@@ -55,15 +55,6 @@
       poster: 'assets/w10-poster.webp', full: 'assets/w10.mp4' }
   ];
 
-  var STEPS = [
-    { title: 'Hook and brief', text: 'It starts from the client, the product and the one moment that stops the scroll in the first one or two seconds.', deliver: 'Concept directions and the opening hook' },
-    { title: 'Script and characters', text: 'A timed beat sheet, dialogue written in the right dialect, and characters designed to stay consistent across every scene.', deliver: 'Script, beat sheet and character references' },
-    { title: 'References and shots', text: 'Visual references and a shot list that fix framing, camera and transitions before anything is generated.', deliver: 'Reference board and shot list' },
-    { title: 'Prompt and generate', text: 'Prompts written for each tool, not copied between them. The hardest shot is tested first.', deliver: 'Approved test shots' },
-    { title: 'Identity and motion review', text: 'Faces, products, logos and motion are checked and fixed before anything moves to final quality.', deliver: 'Locked scenes' },
-    { title: 'Voice, edit and captions', text: 'Voice and lip-sync, editing, sound, captions and revisions until it is ready to post.', deliver: 'Final film and caption' }
-  ];
-
   var SERVICES = ['AI CGI', 'Brand Commercial', 'Trend-Led Content', 'Expert Branding', '3D Website', 'Creative Direction'];
 
   // render pass: one sweep every RP_PERIOD seconds, lasting RP_DUR seconds
@@ -281,37 +272,6 @@
 
   $('hh-lb-close').addEventListener('click', closePlay);
   lb.addEventListener('click', function (e) { if (e.target === lb) closePlay(); });
-
-  /* ---------- process ---------- */
-  var step = 0;
-  var stepsEl = $('hh-steps'), barsEl = $('hh-panel-bars');
-
-  function renderSteps() {
-    stepsEl.textContent = '';
-    barsEl.textContent = '';
-    STEPS.forEach(function (s, i) {
-      var b = document.createElement('button');
-      b.type = 'button';
-      b.className = 'step' + (step === i ? ' on' : '');
-      b.setAttribute('aria-pressed', step === i ? 'true' : 'false');
-      var n = document.createElement('span');
-      n.className = 'step-n';
-      n.textContent = pad(i + 1);
-      var t = document.createElement('span');
-      t.textContent = s.title;
-      b.appendChild(n);
-      b.appendChild(t);
-      b.addEventListener('click', function () { step = i; renderSteps(); });
-      stepsEl.appendChild(b);
-
-      var bar = document.createElement('span');
-      if (i <= step) bar.className = 'on';
-      barsEl.appendChild(bar);
-    });
-    $('hh-panel-num').textContent = pad(step + 1);
-    $('hh-panel-text').textContent = STEPS[step].text;
-    $('hh-panel-deliver').textContent = STEPS[step].deliver;
-  }
 
   /* ---------- booking modal ---------- */
   var modal = $('hh-modal'), scrim = $('hh-scrim');
@@ -661,7 +621,6 @@
 
   renderFilters();
   renderGrid();
-  renderSteps();
   renderServices();
   trackScroll();
   startMotion();

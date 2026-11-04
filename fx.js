@@ -6,6 +6,7 @@
 
   var reduce = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
   var small = (window.innerWidth || 1200) < 760;
+  var TOUCH = !!(window.matchMedia && window.matchMedia('(pointer: coarse)').matches);
   var $ = function (id) { return document.getElementById(id); };
   var rand = function (a, b) { return a + Math.random() * (b - a); };
   var clamp = function (v, a, b) { return Math.max(a, Math.min(b, v)); };
@@ -13,12 +14,23 @@
   var D0 = 6;                                    // reference depth: a sphere at d = D0 sits exactly where its (ax, ay) says
 
   /* ---------- shared pointer ---------- */
-  var ptr = { x: 0, y: 0, tx: 0, ty: 0, rx: 0, ry: 0, last: -1e9 };   // x/y: smoothed (also idle sway); rx/ry: where the cursor really is
+  var ptr = { x: 0, y: 0, tx: 0, ty: 0, rx: 0, ry: 0, last: -1e9, tl: -1e9 };   // x/y: smoothed (also idle sway); rx/ry: where the cursor really is
   window.addEventListener('pointermove', function (e) {
     ptr.tx = (e.clientX / (window.innerWidth || 1) - 0.5) * 2;
     ptr.ty = (e.clientY / (window.innerHeight || 1) - 0.5) * 2;
     ptr.last = performance.now(); ptr.rx = ptr.tx; ptr.ry = ptr.ty;
   }, { passive: true });
+
+  /* ---------- phones: tilt the device to look around ---------- */
+  if (TOUCH && !reduce && window.DeviceOrientationEvent && typeof window.DeviceOrientationEvent.requestPermission !== 'function') {
+    var o0 = null, og = 0, ob = 0;
+    window.addEventListener('deviceorientation', function (e) {
+      if (e.gamma == null || e.beta == null) return;
+      if (!o0) { o0 = { g: e.gamma, b: e.beta }; og = e.gamma; ob = e.beta; }      // the pose you first hold it in is the centre
+      ptr.tx = clamp((e.gamma - o0.g) / 20, -1, 1); ptr.ty = clamp((e.beta - o0.b) / 20, -1, 1);
+      if (Math.abs(e.gamma - og) + Math.abs(e.beta - ob) > 1.5) { ptr.tl = performance.now(); og = e.gamma; ob = e.beta; }   // only real movement counts
+    }, { passive: true });
+  }
 
   /* ---------- shaders: impostor spheres, lit by a procedural studio so they read as polished gold ---------- */
   var VS = [
@@ -167,7 +179,7 @@
   var back = null, front = null;
   var cb = $('fx-back'), cf = $('fx-front');
   if (cb) back = makeField(cb, {
-    n: small ? 6 : 10, dMin: 5.0, dMax: 20, far: 22, speed: 0.5, rMin: 0.06, rMax: 0.15, alpha: 0.9, dpr: 1.5, still: reduce,
+    n: small ? 8 : 10, dMin: 5.0, dMax: 20, far: 22, speed: small ? 0.85 : 0.5, rMin: 0.06, rMax: 0.15, alpha: 0.9, dpr: 1.5, still: reduce,
     blur: function (d) { return clamp(Math.abs(d - 9) / 11, 0, 1) * 0.7; }
   });
   if (cf && !reduce) front = makeField(cf, {
@@ -180,7 +192,8 @@
   function updateStage() {
     if (!stage || reduce || window.scrollY > (window.innerHeight || 800) * 1.1) return;
     stage.style.setProperty('--px', ptr.x.toFixed(3));
-    stage.style.setProperty('--py', ptr.y.toFixed(3));
+    var sy = TOUCH ? clamp(window.scrollY / Math.max(1, stage.offsetHeight), 0, 1.2) * 0.9 : 0;   // on phones, scrolling tips the hero
+    stage.style.setProperty('--py', (ptr.y + sy).toFixed(3));
   }
 
   /* ---------- loop ---------- */
@@ -190,7 +203,9 @@
     var dt = Math.min(0.05, (now - last) / 1000); last = now;
     var y = window.scrollY;
     vel += (clamp((y - lastY) / Math.max(dt, 0.001), -4000, 4000) - vel) * 0.12; lastY = y;
-    if (now - ptr.last > 2600) { ptr.tx = Math.sin(now / 2600) * 0.4; ptr.ty = Math.cos(now / 3300) * 0.18; }   // idle sway
+    if (now - Math.max(ptr.last, ptr.tl) > 2600) {                                                // idle sway, wider on a phone where there is no cursor
+      ptr.tx = Math.sin(now / (TOUCH ? 2000 : 2600)) * (TOUCH ? 0.95 : 0.4); ptr.ty = Math.cos(now / (TOUCH ? 2600 : 3300)) * (TOUCH ? 0.4 : 0.18);
+    }
     ptr.x += (ptr.tx - ptr.x) * 0.06; ptr.y += (ptr.ty - ptr.y) * 0.06;
     var warp = clamp(Math.abs(vel) / 900, 0, 2.2);                                              // scrolling pulls the spheres faster
     if (back) back.frame(dt, warp, now / 1000);
@@ -218,7 +233,7 @@
       cur = null;
     };
     document.addEventListener('pointermove', function (e) {
-      var el = e.target && e.target.closest ? e.target.closest('.card-media') : null;
+      var el = e.target && e.target.closest ? e.target.closest('.card-media, .tilt') : null;
       if (el !== cur) { clear(); cur = el; }
       if (!el) return;
       var r = el.getBoundingClientRect(), x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;

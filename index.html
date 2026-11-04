@@ -270,21 +270,40 @@
   .lightbox-cap { position: absolute; left: 24px; right: 24px; bottom: 22px; margin: 0; text-align: center; font-size: 14px; color: rgba(247, 237, 226, .8); }
 
   /* process */
-  .flow { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 44px; align-items: stretch; margin-top: 40px; }
-  .steps { display: flex; flex-direction: column; border-top: 1px solid var(--line); }
-  .step { display: flex; align-items: center; gap: 18px; width: 100%; min-height: 64px; padding: 0 8px; border: 0; border-bottom: 1px solid var(--line); background: transparent; color: var(--ink-3); font: 500 19px var(--body); text-align: left; cursor: pointer; transition: color .3s, padding .45s var(--ease); }
-  .step:hover { color: var(--ink); }
-  .step.on { color: var(--ink); padding-left: 18px; }
-  .step-n { width: 30px; font-size: 13px; font-variant-numeric: tabular-nums; }
-  .step.on .step-n { color: var(--accent); }
-  .panel { position: relative; overflow: hidden; min-height: 300px; padding: 42px; border-radius: 6px; background: var(--gold-fill); color: #1c0508; display: flex; flex-direction: column; justify-content: space-between; gap: 30px; }
-  .panel-num { position: absolute; right: 36px; top: 26px; font-family: var(--serif); font-weight: 700; font-size: clamp(64px, 7vw, 96px); line-height: .8; color: rgba(43, 10, 16, .3); pointer-events: none; }
-  .panel-text { margin: 78px 0 18px; max-width: 36ch; font-family: var(--serif); font-weight: 500; font-size: clamp(20px, 2vw, 26px); line-height: 1.28; letter-spacing: -.02em; color: #1c0508; }
-  .panel-deliver { margin: 0; font-size: 14px; color: rgba(43, 10, 16, .72); }
-  .panel-deliver strong { font-weight: 600; color: #1c0508; }
-  .progress { display: flex; gap: 6px; }
-  .progress span { flex: 1; height: 2px; background: rgba(43, 10, 16, .25); transition: background .4s; }
-  .progress span.on { background: #1c0508; }
+
+  /* process: four numbered steps (a real sequence), the second one is the approval point */
+  .proc { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 18px; margin: 44px 0 0; padding: 0; list-style: none; counter-reset: none; }
+  .proc-step { position: relative; display: flex; flex-direction: column; gap: 12px; padding: 28px 24px 26px; border: 1px solid var(--line); border-radius: 6px; background: rgba(12, 2, 5, .42); overflow: hidden; }
+  .proc-step.gate { border-color: rgba(181, 138, 60, .7); background: rgba(40, 8, 14, .55); }
+  .proc-n { font-family: var(--serif); font-weight: 700; font-size: 56px; line-height: .9; letter-spacing: -.03em; color: var(--gold); font-variant-numeric: tabular-nums; }
+  .proc-step h3 { margin: 6px 0 0; font-family: var(--serif); font-weight: 600; font-size: 21px; line-height: 1.15; letter-spacing: -.02em; color: var(--ink); }
+  .proc-step p { margin: 0; font-size: 15.5px; line-height: 1.6; color: var(--ink-2); }
+  .proc-get { margin-top: auto !important; padding-top: 14px; border-top: 1px solid var(--line); font-size: 14px !important; color: var(--ink-3) !important; }
+  .proc-get strong { font-weight: 600; color: var(--accent); }
+  .proc-pill { position: absolute; top: 22px; right: 20px; padding: 6px 12px; border-radius: 999px; background: var(--gold-fill); color: #1c0508; font-size: 12.5px; font-weight: 500; }
+  .proc-note { margin: 26px 0 0; font-size: 16px; color: var(--ink-2); }
+  .proc-step:nth-child(2) { transition-delay: 0s, .08s; }
+  .proc-step:nth-child(3) { transition-delay: 0s, .16s; }
+  .proc-step:nth-child(4) { transition-delay: 0s, .24s; }
+
+  /* the difference: a tool on its own versus the direction around it */
+  .vs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px; margin-top: 40px; max-width: 980px; }
+  .vs-card { position: relative; padding: 32px 30px; border: 1px solid var(--line); border-radius: 6px; background: rgba(12, 2, 5, .42); overflow: hidden; }
+  .vs-card h3 { margin: 0 0 18px; font-family: var(--serif); font-weight: 600; font-size: 24px; letter-spacing: -.02em; color: var(--ink); }
+  .vs-card ul { margin: 0; padding: 0; list-style: none; }
+  .vs-card li { position: relative; padding: 13px 0 13px 30px; border-top: 1px solid var(--line); font-size: 16.5px; line-height: 1.5; color: var(--ink-2); }
+  .vs-card li::before { content: ""; position: absolute; left: 4px; top: 22px; width: 12px; height: 1.5px; background: var(--ink-3); }
+  .vs-me { border-color: rgba(181, 138, 60, .7); background: rgba(40, 8, 14, .55); }
+  .vs-me h3 { color: var(--gold); }
+  .vs-me li { color: var(--ink); }
+  .vs-me li::before { left: 3px; top: 17px; width: 11px; height: 6px; background: none; border-left: 2px solid var(--accent); border-bottom: 2px solid var(--accent); transform: rotate(-45deg); }
+
+  /* shared: anything marked .tilt leans toward the cursor with a gold glare (fx.js sets the variables) */
+  .tilt { transform: perspective(900px) translateY(var(--lift, 0px)) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)); transition: transform .35s var(--ease), opacity .9s var(--ease); }
+  .tilt::after { content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0; transition: opacity .3s; background: radial-gradient(circle at var(--gx, 50%) var(--gy, 50%), rgba(255, 236, 180, .16), transparent 58%); }
+  [data-js] .tilt.reveal.in { transform: perspective(900px) translateY(var(--lift, 0px)) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)); }   /* beats the reveal's own transform once the card is in */
+  .tilt:hover { --lift: -3px; }
+  .tilt:hover::after { opacity: 1; }
 
   /* contact */
   .contact { padding: 104px 0 0; scroll-margin-top: 72px; }
@@ -322,7 +341,8 @@
     .nav, .nav.scrolled { padding-left: 20px; padding-right: 20px; }
     .hero { min-height: 0; align-items: flex-start; padding: 28px 0 76px; }
     .hero-grid { grid-template-columns: minmax(0, 1fr); gap: 8px; }
-    .hero-char { height: min(390px, 48svh); }
+    .hero-char { height: min(390px, 48svh); margin-top: 34px; }
+    .char3d { transform: translateZ(36px); }
     .numbers .stat { padding: 24px 0 24px 16px; }
     .numbers .stat strong { font-size: clamp(26px, 8vw, 36px); }
     .numbers .stat span { font-size: 12.5px; }
@@ -336,7 +356,7 @@
     .ba-lab-after.r { display: none; }
     .ba-shot { transform: translate3d(0, calc(var(--k) * 28px), 0) scale(calc(1 - .05 * var(--k))); }
     .chap { padding: 72px 0; }
-    .about-grid, .flow { grid-template-columns: minmax(0, 1fr); gap: 40px; }
+    .about-grid { grid-template-columns: minmax(0, 1fr); gap: 40px; }
     .aud-panel { grid-template-columns: minmax(0, 1fr); gap: 40px; }
     .aud-example { max-width: 420px; }
     .seg { margin: 28px 0 36px; }
@@ -344,12 +364,13 @@
     .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
     .contact-grid, .facts { grid-template-columns: minmax(0, 1fr); }
     .stats { grid-template-columns: minmax(0, 1fr); gap: 20px; }
-    .panel { min-height: 320px; padding: 30px; }
     .contact { padding-top: 72px; }
-    .panel-text { margin: 60px 0 18px; max-width: 32ch; }
-    .panel-num { right: 24px; top: 20px; }
   }
+  @media (max-width: 1100px) { .proc { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 900px) { .float { display: none; } }   /* the small following character covers the content on a phone */
   @media (max-width: 600px) {
+    .proc { grid-template-columns: minmax(0, 1fr); }
+    .vs { grid-template-columns: minmax(0, 1fr); }
     .grid, .row2 { grid-template-columns: minmax(0, 1fr); }
     .seg { display: grid; width: 100%; border-radius: 26px; }
     .seg-btn { padding: 0 16px; }
@@ -615,17 +636,61 @@
     <section id="process" class="chap">
       <div class="wrap">
         <div class="ch reveal"><span class="ch-num">04</span><span>Process</span></div>
-        <h2 class="h2 reveal"><span class="mask"><span>From the first second of the hook to the final caption.</span></span></h2>
-        <div class="flow">
-          <div class="steps reveal" id="hh-steps"></div>
-          <div class="panel" aria-live="polite">
-            <div class="panel-num" id="hh-panel-num" aria-hidden="true">01</div>
-            <div>
-              <p class="panel-text" id="hh-panel-text"></p>
-              <p class="panel-deliver"><strong>You get:</strong> <span id="hh-panel-deliver"></span></p>
-            </div>
-            <div class="progress" id="hh-panel-bars" aria-hidden="true"></div>
-          </div>
+        <h2 class="h2 reveal"><span class="mask"><span>Four steps. You approve each one.</span></span></h2>
+        <ol class="proc">
+          <li class="proc-step tilt reveal">
+            <span class="proc-n">1</span>
+            <h3>Tell me the idea and the product</h3>
+            <p>The client, the product and the one moment that should stop the scroll.</p>
+          </li>
+          <li class="proc-step gate tilt reveal">
+            <span class="proc-pill">You approve</span>
+            <span class="proc-n">2</span>
+            <h3>I send the direction</h3>
+            <p>The idea, the hook and the visual look. Nothing moves on until you approve it.</p>
+            <p class="proc-get"><strong>You get:</strong> concept directions and the opening hook</p>
+          </li>
+          <li class="proc-step tilt reveal">
+            <span class="proc-n">3</span>
+            <h3>I build the scenes</h3>
+            <p>Script, characters, generation, voice and dialect, checked until faces, products and logos hold steady.</p>
+            <p class="proc-get"><strong>You get:</strong> script, characters and locked scenes</p>
+          </li>
+          <li class="proc-step tilt reveal">
+            <span class="proc-n">4</span>
+            <h3>Edit, delivery and a round of revisions</h3>
+            <p>Editing, sound and captions, then a round of changes on your notes until it is ready to post.</p>
+            <p class="proc-get"><strong>You get:</strong> the final film and caption</p>
+          </li>
+        </ol>
+        <p class="proc-note reveal">Every step is approved before the next.</p>
+      </div>
+    </section>
+
+    <section id="difference" class="chap sand">
+      <div class="wrap">
+        <div class="ch reveal"><span class="ch-num">→</span><span>The difference</span></div>
+        <h2 class="h2 reveal"><span class="mask"><span>Not just a button press.</span></span></h2>
+        <p class="body reveal">The tool makes the shots. The direction around it makes the film.</p>
+        <div class="vs">
+          <article class="vs-card tilt reveal">
+            <h3>An AI tool on its own</h3>
+            <ul>
+              <li>Beautiful, separate shots</li>
+              <li>The face and the product change between scenes</li>
+              <li>No story holding them together</li>
+            </ul>
+          </article>
+          <article class="vs-card vs-me tilt reveal">
+            <h3>Me, with the tool</h3>
+            <ul>
+              <li>An idea and a hook</li>
+              <li>A character who stays the same</li>
+              <li>The right dialect</li>
+              <li>Editing and rhythm</li>
+              <li>Revisions on your notes</li>
+            </ul>
+          </article>
         </div>
       </div>
     </section>
