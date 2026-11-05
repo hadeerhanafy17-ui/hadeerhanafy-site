@@ -89,8 +89,11 @@ Files under `/assets/` are cached as immutable for a year: a changed asset needs
 This section is the memory of the setup, so a new session or a new chat knows it without asking.
 Passwords, recovery codes and authenticator seeds are **never** written in this repo; the owner keeps them herself.
 
-- **Domain** `hadeerhanafy.com` was bought **through Vercel** (Dashboard → Domains). `www.hadeerhanafy.com`
-  redirects (308) to the bare domain. Check the expiry date and that auto-renew is on and the card is valid.
+- **Domain** `hadeerhanafy.com` is registered with a **third party registrar, not Vercel** (Vercel's Domains page says
+  "This domain is registered with a third party"; the site's A record points at Vercel). Registrar name: *to be filled in by the
+  owner*. Expiry date, auto-renew, domain lock and nameserver changes all live at that registrar, so that account needs
+  two-factor sign-in too. `www.hadeerhanafy.com` redirects (308) to the bare domain. The HTTPS certificates are issued and
+  renewed automatically by Vercel (renewal "Auto").
 - **Hosting** Vercel project `hadeerhanafy` (id `prj_eQppw1Um6uygHoRN8rgEjaPb2Qx9`), no framework, no build step.
   Production deploys from `main` of the GitHub repo.
 - **Code** GitHub `hadeerhanafy17-ui/hadeerhanafy-site` (public). Secret scanning and push protection are on.
