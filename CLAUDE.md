@@ -90,17 +90,18 @@ This section is the memory of the setup, so a new session or a new chat knows it
 Passwords, recovery codes and authenticator seeds are **never** written in this repo; the owner keeps them herself.
 
 - **Domain** `hadeerhanafy.com` is registered with **Cloudflare Registrar**, not Vercel (Vercel's Domains page says
-  "registered with a third party"; the site's A record points at Vercel). Registered on 2026-10-06 for one year, **through
-  2027-10-06**. Cloudflare's own email says it renews 30 days before expiry *if auto-renew is on*, and a second email five
-  minutes after the purchase says **auto-renew was disabled**: the owner must switch it back on in the Cloudflare dashboard
-  (Domain Registration → Manage Domains → hadeerhanafy.com) or renew by hand before 2027-10-06. Update this line once done.
-  Expiry, auto-renew, lock and nameservers live in that Cloudflare account, which needs two-factor sign-in too.
-  `www.hadeerhanafy.com` redirects (308) to the bare domain. HTTPS certificates are issued and renewed by Vercel (renewal "Auto").
+  "registered with a third party"; DNS is Cloudflare's too, with an A record at Vercel). Registered 2026-10-06 for one year,
+  **through 2027-10-06**. State on 2026-11-05: transfer lock on, WHOIS privacy on, DNSSEC enabled.
+  **Auto-renew is off** (the owner paid with a relative's card and keeps it off until her own card is on file); renewal is
+  about US$11.17. The owner must renew by hand or switch auto-renew on **before 2027-10-06** (calendar reminder: 2027-09-01).
+  **Open item:** two-factor sign-in on the Cloudflare account (My Profile → Authentication → Mobile App) is not confirmed yet.
+  Update this paragraph when those are done. `www.hadeerhanafy.com` redirects (308) to the bare domain.
+  HTTPS certificates are issued and renewed by Vercel (renewal "Auto").
 - **Hosting** Vercel project `hadeerhanafy` (id `prj_eQppw1Um6uygHoRN8rgEjaPb2Qx9`), no framework, no build step.
   Production deploys from `main` of the GitHub repo.
-- **Code** GitHub `hadeerhanafy17-ui/hadeerhanafy-site` (public). Secret scanning and push protection are on.
-  Two-factor sign-in is on for the GitHub account. Still to be done by the owner in the GitHub web UI:
-  protect `main` against force-push and deletion, and turn on private vulnerability reporting.
+- **Code** GitHub `hadeerhanafy17-ui/hadeerhanafy-site` (public). Secret scanning and push protection are on, `main` is
+  protected against deletion and force-push (ruleset `protect-main`), private vulnerability reporting is on, and
+  two-factor sign-in is on for the account. `security-check` runs on every push.
 - **Contact** Instagram `@hadeerhanafy17`, email on the page, WhatsApp through a `wa.me` link only (rule 17).
 - Claude Code sessions cannot open `hadeerhanafy.com`, change GitHub repo settings, or read the domain registration;
   they can read Vercel deployments. Verify the live site from a phone.
