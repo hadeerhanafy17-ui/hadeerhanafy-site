@@ -1,0 +1,18 @@
+name: security-check
+
+# Runs the guardrail script from CLAUDE.md on every push and pull request.
+# No secrets, no third-party actions except GitHub's own checkout (pinned to a commit).
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Security guardrails
+        run: python3 tools/security-check.py

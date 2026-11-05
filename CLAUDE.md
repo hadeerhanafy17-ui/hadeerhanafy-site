@@ -21,7 +21,11 @@ Vercel from `main` (no build step; the repo root is served as-is).
   `prefers-reduced-motion` (draws once, then stays still)
 - `assets/` — character sprite sheet, portraits, film stills (`w*-poster.webp`, 640x800,
   cut from each film at full resolution), films (`w*.mp4`, web-encoded, faststart), social card
+- `assets/fonts/` — Archivo, Inter and Cairo as `woff2`, served from this site (`@font-face` at the top of `styles.css`)
 - `vercel.json` — security headers, CSP, caching
+- `tools/security-check.py` — guardrail for the rules below (stdlib only). Run `python3 tools/security-check.py`
+  before every push; `.github/workflows/security-check.yml` runs it on GitHub for every push and pull request
+- `.well-known/security.txt` — where researchers can report a problem
 
 ## Security rules — apply to every change
 
@@ -45,9 +49,9 @@ These are standing requirements from the owner. Treat them as non-negotiable.
    attributes — both are blocked by CSP and neither is needed.
 6. **Render user-supplied text with `textContent`, never `innerHTML`.** This is
    how the booking form already builds its summary; keep it that way.
-7. **No third-party scripts.** Only Google Fonts (CSS + font files) is allowed
-   off-origin, and only because CSP lists those two hosts. Adding an analytics or
-   widget script means widening CSP — ask first.
+7. **No third-party anything.** Scripts, styles, fonts and images all come from this
+   site; the CSP lists no outside host (fonts were moved off Google Fonts on purpose).
+   Adding analytics, a widget, a CDN or a font host means widening CSP — ask first.
 8. **Zero runtime dependencies.** The site ships no npm packages, so there is no
    dependency tree to patch. Keep it that way unless there is a real reason.
 9. **Directory listing is off** (Vercel default) and build/runtime errors are
@@ -74,4 +78,25 @@ These are standing requirements from the owner. Treat them as non-negotiable.
 
 ## Deploying
 
-Push to `main`. Vercel builds and promotes to `hadeerhanafy.com` automatically.
+1. Run `python3 tools/security-check.py` (it must pass) and test the page locally.
+2. Push to `main`. Vercel builds and promotes to `hadeerhanafy.com` automatically.
+3. Check the deployment reaches `READY` in Vercel.
+
+Files under `/assets/` are cached as immutable for a year: a changed asset needs a **new file name**.
+
+## Where everything lives (no secrets here, ever)
+
+This section is the memory of the setup, so a new session or a new chat knows it without asking.
+Passwords, recovery codes and authenticator seeds are **never** written in this repo; the owner keeps them herself.
+
+- **Domain** `hadeerhanafy.com` was bought **through Vercel** (Dashboard → Domains). `www.hadeerhanafy.com`
+  redirects (308) to the bare domain. Check the expiry date and that auto-renew is on and the card is valid.
+- **Hosting** Vercel project `hadeerhanafy` (id `prj_eQppw1Um6uygHoRN8rgEjaPb2Qx9`), no framework, no build step.
+  Production deploys from `main` of the GitHub repo.
+- **Code** GitHub `hadeerhanafy17-ui/hadeerhanafy-site` (public). Secret scanning and push protection are on.
+  Two-factor sign-in is on for the GitHub account. Still to be done by the owner in the GitHub web UI:
+  protect `main` against force-push and deletion, and turn on private vulnerability reporting.
+- **Contact** Instagram `@hadeerhanafy17`, email on the page, WhatsApp through a `wa.me` link only (rule 17).
+- Claude Code sessions cannot open `hadeerhanafy.com`, change GitHub repo settings, or read the domain registration;
+  they can read Vercel deployments. Verify the live site from a phone.
+- The Arabic page lives at `/ar` and must be kept in step with `index.html` (same ids, same sections).
