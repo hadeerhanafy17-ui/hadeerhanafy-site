@@ -89,11 +89,13 @@ Files under `/assets/` are cached as immutable for a year: a changed asset needs
 This section is the memory of the setup, so a new session or a new chat knows it without asking.
 Passwords, recovery codes and authenticator seeds are **never** written in this repo; the owner keeps them herself.
 
-- **Domain** `hadeerhanafy.com` is registered with a **third party registrar, not Vercel** (Vercel's Domains page says
-  "This domain is registered with a third party"; the site's A record points at Vercel). Registrar name: *to be filled in by the
-  owner*. Expiry date, auto-renew, domain lock and nameserver changes all live at that registrar, so that account needs
-  two-factor sign-in too. `www.hadeerhanafy.com` redirects (308) to the bare domain. The HTTPS certificates are issued and
-  renewed automatically by Vercel (renewal "Auto").
+- **Domain** `hadeerhanafy.com` is registered with **Cloudflare Registrar**, not Vercel (Vercel's Domains page says
+  "registered with a third party"; the site's A record points at Vercel). Registered on 2026-10-06 for one year, **through
+  2027-10-06**. Cloudflare's own email says it renews 30 days before expiry *if auto-renew is on*, and a second email five
+  minutes after the purchase says **auto-renew was disabled**: the owner must switch it back on in the Cloudflare dashboard
+  (Domain Registration → Manage Domains → hadeerhanafy.com) or renew by hand before 2027-10-06. Update this line once done.
+  Expiry, auto-renew, lock and nameservers live in that Cloudflare account, which needs two-factor sign-in too.
+  `www.hadeerhanafy.com` redirects (308) to the bare domain. HTTPS certificates are issued and renewed by Vercel (renewal "Auto").
 - **Hosting** Vercel project `hadeerhanafy` (id `prj_eQppw1Um6uygHoRN8rgEjaPb2Qx9`), no framework, no build step.
   Production deploys from `main` of the GitHub repo.
 - **Code** GitHub `hadeerhanafy17-ui/hadeerhanafy-site` (public). Secret scanning and push protection are on.
